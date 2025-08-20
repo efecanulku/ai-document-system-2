@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Kayıt Ol - AI Döküman Yönetimi{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Kayıt Ol</h3>
+                    <p class="text-muted">Yeni hesap oluşturun</p>
+                </div>
+
+                <form id="registerForm">
+                    <div class="mb-3">
+                        <label for="company_name" class="form-label">Şirket Adı</label>
+                        <input type="text" class="form-control" id="company_name" name="company_name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Kullanıcı Adı</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-posta</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Şifre</label>
+                        <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                        <div class="form-text">En az 6 karakter olmalı</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Şifre Tekrar</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Kayıt Ol
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="mb-0">Zaten hesabınız var mı? 
+                        <a href="/login" class="text-decoration-none">Giriş yapın</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('registerForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const password = formData.get('password');
+    const confirmPassword = formData.get('confirm_password');
+    
+    if (password !== confirmPassword) {
+        showError('Şifreler eşleşmiyor!');
+        return;
+    }
+    
+    showLoading();
+    
+    try {
+        const response = await axios.post('/api/auth/register', {
+            company_name: formData.get('company_name'),
+            username: formData.get('username'),
+            email: formData.get('email'),
+            password: password
+        });
+        
+        showSuccess('Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...');
+        setTimeout(() => {
+            window.location.href = '/login';
+        }, 2000);
+        
+    } catch (error) {
+        showError(error.response?.data?.detail || 'Kayıt olurken hata oluştu');
+    } finally {
+        hideLoading();
+    }
+});
+
+// Check if already logged in
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        window.location.href = '/dashboard';
+    }
+});
+</script>
+{% endblock %}

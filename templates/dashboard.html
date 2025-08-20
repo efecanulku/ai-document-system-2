@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Döküman Yönetimi{% endblock %}
+
+{% block content %}
+<div id="dashboardContent">
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">Toplam Döküman</h6>
+                            <h3 class="mb-0" id="totalDocs">0</h3>
+                        </div>
+                        <i class="fas fa-file-alt fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 bg-success text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">İşlenen</h6>
+                            <h3 class="mb-0" id="processedDocs">0</h3>
+                        </div>
+                        <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 bg-warning text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">İşleniyor</h6>
+                            <h3 class="mb-0" id="processingDocs">0</h3>
+                        </div>
+                        <i class="fas fa-cog fa-spin fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <div class="card border-0 bg-info text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title mb-1">İşlenme Oranı</h6>
+                            <h3 class="mb-0" id="processingRate">0%</h3>
+                        </div>
+                        <i class="fas fa-chart-pie fa-2x opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-bolt me-2"></i>Hızlı İşlemler
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <button class="btn btn-primary w-100" onclick="showDocumentUpload()">
+                                <i class="fas fa-upload me-2"></i>Döküman Yükle
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-success w-100" onclick="showChat()">
+                                <i class="fas fa-comments me-2"></i>AI Chat Başlat
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-info w-100" onclick="showSearch()">
+                                <i class="fas fa-search me-2"></i>Akıllı Arama
+                            </button>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-secondary w-100" onclick="showDocuments()">
+                                <i class="fas fa-list me-2"></i>Dökümanları Listele
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Documents -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock me-2"></i>Son Yüklenen Dökümanlar
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="recentDocuments">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>Dosya Tipi Dağılımı
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="fileTypeChart">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Document Management Section (Hidden by default) -->
+<div id="documentsSection" style="display: none;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="fas fa-file-alt me-2"></i>Dökümanlarım</h3>
+        <div>
+            <button class="btn btn-primary" onclick="showDocumentUpload()">
+                <i class="fas fa-plus me-2"></i>Yeni Döküman
+            </button>
+            <button class="btn btn-secondary" onclick="showDashboard()">
+                <i class="fas fa-arrow-left me-2"></i>Dashboard'a Dön
+            </button>
+        </div>
+    </div>
+    
+    <!-- File Upload Form -->
+    <div id="uploadForm" class="card mb-4" style="display: none;">
+        <div class="card-header">
+            <h5 class="mb-0">Döküman Yükle</h5>
+        </div>
+        <div class="card-body">
+            <form id="documentUploadForm" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="documentFile" class="form-label">Dosya Seçin</label>
+                    <input type="file" class="form-control" id="documentFile" name="file" 
+                           accept=".pdf,.docx,.doc,.xlsx,.xls,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.txt" required>
+                    <div class="form-text">
+                        Desteklenen formatlar: PDF, Word, Excel, Resimler, Metin dosyaları
+                    </div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-upload me-2"></i>Yükle
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="hideDocumentUpload()">
+                        İptal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Documents List -->
+    <div class="card">
+        <div class="card-body">
+            <div id="documentsList">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Section (Hidden by default) -->
+<div id="chatSection" style="display: none;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="fas fa-comments me-2"></i>AI Chat</h3>
+        <button class="btn btn-secondary" onclick="showDashboard()">
+            <i class="fas fa-arrow-left me-2"></i>Dashboard'a Dön
+        </button>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Chat Sessions -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0">Sohbet Oturumları</h6>
+                        <button class="btn btn-sm btn-primary" onclick="createNewChatSession()">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div id="chatSessions" class="list-group list-group-flush">
+                        <!-- Will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <!-- Chat Interface -->
+            <div class="card chat-card">
+                <div class="card-header">
+                    <h6 class="mb-0" id="chatSessionName">AI Asistan</h6>
+                </div>
+                <div class="card-body chat-body" id="chatMessages" style="height: 400px; overflow-y: auto;">
+                    <div class="text-muted text-center p-4">
+                        Merhaba! Size nasıl yardımcı olabilirim? Dökümanlarınız hakkında soru sorabilirsiniz.
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form id="chatForm">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="chatInput" 
+                                   placeholder="Mesajınızı yazın..." required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search Section (Hidden by default) -->
+<div id="searchSection" style="display: none;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3><i class="fas fa-search me-2"></i>Akıllı Arama</h3>
+        <button class="btn btn-secondary" onclick="showDashboard()">
+            <i class="fas fa-arrow-left me-2"></i>Dashboard'a Dön
+        </button>
+    </div>
+    
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form id="searchForm">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <input type="text" class="form-control form-control-lg" 
+                                   id="searchQuery" placeholder="Dökümanlarınızda ara..." required>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <select class="form-select" id="searchFileType">
+                                <option value="">Tüm Dosya Tipleri</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-2"></i>Ara
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Search Results -->
+    <div id="searchResults">
+        <!-- Will be populated by JavaScript -->
+    </div>
+</div>
+
+<script src="/static/js/dashboard.js"></script>
+{% endblock %}

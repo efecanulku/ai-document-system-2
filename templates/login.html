@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Giriş Yap - AI Döküman Yönetimi{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-4">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold">Giriş Yap</h3>
+                    <p class="text-muted">Hesabınıza giriş yapın</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">E-posta</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Şifre</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Giriş Yap
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center mt-4">
+                    <p class="mb-0">Hesabınız yok mu? 
+                        <a href="/register" class="text-decoration-none">Kayıt olun</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('loginForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const email = formData.get('email');
+    const password = formData.get('password');
+    
+    showLoading();
+    
+    try {
+        const response = await axios.post('/api/auth/login', {
+            email: email,
+            password: password
+        });
+        
+        if (response.data.access_token) {
+            localStorage.setItem('token', response.data.access_token);
+            showSuccess('Giriş başarılı! Yönlendiriliyorsunuz...');
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 1500);
+        }
+    } catch (error) {
+        showError(error.response?.data?.detail || 'Giriş yapılırken hata oluştu');
+    } finally {
+        hideLoading();
+    }
+});
+
+// Check if already logged in
+document.addEventListener('DOMContentLoaded', function() {
+    const token = localStorage.getItem('token');
+    if (token) {
+        window.location.href = '/dashboard';
+    }
+});
+</script>
+{% endblock %}
