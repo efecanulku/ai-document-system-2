@@ -24,6 +24,68 @@ function initializeDashboard() {
     console.log('Initializing dashboard...');
     setupEventListeners();
     loadDashboardData();
+    
+    // Check if we should show a specific section
+    const sectionToShow = localStorage.getItem('showSection');
+    if (sectionToShow) {
+        localStorage.removeItem('showSection'); // Clear it
+        setTimeout(() => {
+            switch(sectionToShow) {
+                case 'documents':
+                    showDocumentsSection();
+                    break;
+                case 'chat':
+                    showChatSection();
+                    break;
+                case 'search':
+                    showSearchSection();
+                    break;
+                default:
+                    showDashboardSection();
+            }
+        }, 500); // Wait for dashboard to load
+    }
+}
+
+function showDashboardSection() {
+    document.getElementById('dashboardContent').style.display = 'block';
+    document.getElementById('documentsSection').style.display = 'none';
+    document.getElementById('chatSection').style.display = 'none';
+    document.getElementById('searchSection').style.display = 'none';
+    document.getElementById('uploadForm').style.display = 'none';
+}
+
+function showDocumentsSection() {
+    if (!requireAuth()) return;
+    
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('documentsSection').style.display = 'block';
+    document.getElementById('chatSection').style.display = 'none';
+    document.getElementById('searchSection').style.display = 'none';
+    
+    loadDocuments();
+}
+
+function showChatSection() {
+    if (!requireAuth()) return;
+    
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('documentsSection').style.display = 'none';
+    document.getElementById('chatSection').style.display = 'block';
+    document.getElementById('searchSection').style.display = 'none';
+    
+    loadChatSessions();
+}
+
+function showSearchSection() {
+    if (!requireAuth()) return;
+    
+    document.getElementById('dashboardContent').style.display = 'none';
+    document.getElementById('documentsSection').style.display = 'none';
+    document.getElementById('chatSection').style.display = 'none';
+    document.getElementById('searchSection').style.display = 'block';
+    
+    loadSearchFilters();
 }
 
 function setupEventListeners() {
@@ -220,6 +282,13 @@ async function handleDocumentUpload(e) {
         showSuccess('Döküman başarıyla yüklendi! AI analizi başlatıldı.');
         e.target.reset();
         hideDocumentUpload();
+        
+        // Check if we're currently viewing documents section
+        const documentsSection = document.getElementById('documentsSection');
+        if (documentsSection && documentsSection.style.display !== 'none') {
+            // If we're in documents section, reload the documents list
+            setTimeout(() => loadDocuments(), 1000);
+        }
         
         // Refresh dashboard data
         setTimeout(() => loadDashboardData(), 2000);

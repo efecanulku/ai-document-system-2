@@ -151,8 +151,10 @@ function hideDocumentUpload() {
 // Document management functions
 async function loadDocuments() {
     try {
+        console.log('Loading documents...');
         const response = await axios.get('/api/documents/');
         documents = response.data;
+        console.log('Documents loaded:', documents.length, 'items');
         renderDocuments();
     } catch (error) {
         showError('Dökümanlar yüklenirken hata oluştu');
@@ -297,11 +299,31 @@ async function viewDocumentContent(documentId) {
     }
 }
 
+// Navigation functions - available on all pages
+function showDashboard() {
+    window.location.href = '/dashboard';
+}
+
+function showDocuments() {
+    // Store the section to show in localStorage
+    localStorage.setItem('showSection', 'documents');
+    window.location.href = '/dashboard';
+}
+
+function showChat() {
+    // Store the section to show in localStorage
+    localStorage.setItem('showSection', 'chat');
+    window.location.href = '/dashboard';
+}
+
+function showSearch() {
+    // Store the section to show in localStorage
+    localStorage.setItem('showSection', 'search');
+    window.location.href = '/dashboard';
+}
+
 // Initialize page
 document.addEventListener('DOMContentLoaded', function() {
-    // Show dashboard by default if on dashboard page
-    if (window.location.pathname === '/dashboard') {
-        if (!requireAuth()) return;
-        showDashboard();
-    }
+    // Dashboard initialization is handled by dashboard.js
+    console.log('Main.js loaded on page:', window.location.pathname);
 });

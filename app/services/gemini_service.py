@@ -14,7 +14,7 @@ class GeminiService:
             raise ValueError("GEMINI_API_KEY not found in environment variables")
         
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel('gemini-pro')
+        self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
         # embedding-001 is accessed directly via genai.embed_content
     
     async def generate_summary(self, text: str) -> str:

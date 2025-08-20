@@ -150,7 +150,7 @@ def test_gemini_api():
         genai.configure(api_key=api_key)
         
         # Test basic functionality
-        model = genai.GenerativeModel('gemini-pro')
+        model = genai.GenerativeModel('gemini-2.0-flash-exp')
         response = model.generate_content("Test mesajı")
         
         if response.text:
