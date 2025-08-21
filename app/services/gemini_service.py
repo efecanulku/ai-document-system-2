@@ -14,7 +14,7 @@ class GeminiService:
             raise ValueError("GEMINI_API_KEY not found in environment variables")
         
         genai.configure(api_key=self.api_key)
-        self.model = genai.GenerativeModel('gemini-2.0-flash-exp')
+        self.model = genai.GenerativeModel('gemini-2.0-flash')
         # embedding-001 is accessed directly via genai.embed_content
     
     async def generate_summary(self, text: str) -> str:
@@ -75,28 +75,43 @@ class GeminiService:
             return []
     
     async def chat_with_context(self, question: str, context_documents: List[Dict]) -> str:
-        """Döküman bağlamında soru cevapla"""
+        """Döküman bağlamında soru cevapla - Optimize edilmiş prompt"""
         try:
+            if not context_documents:
+                return "Henüz sisteme döküman yüklenmemiş. Lütfen önce döküman yükleyerek sistemi eğitin."
+            
+            # En alakalı chunk'ları al
+            relevant_chunks = []
+            for doc in context_documents[:3]:  # En fazla 3 döküman
+                relevant_chunks.append({
+                    'filename': doc.get('filename', 'Bilinmeyen'),
+                    'content': doc.get('content_text', '')[:800],  # Kısa tut
+                    'summary': doc.get('summary', '')
+                })
+            
             # Bağlam oluştur
             context = ""
-            for doc in context_documents:
-                context += f"\nDöküman: {doc.get('filename', 'Bilinmeyen')}\n"
-                context += f"İçerik: {doc.get('content_text', '')[:1000]}...\n"
-                context += f"Özet: {doc.get('summary', '')}\n"
-                context += "---\n"
+            for i, chunk in enumerate(relevant_chunks, 1):
+                context += f"\n[KAYNAK {i}: {chunk['filename']}]\n"
+                if chunk['summary']:
+                    context += f"Özet: {chunk['summary']}\n"
+                context += f"İçerik: {chunk['content']}\n"
             
-            prompt = f"""
-            Sen bir yapay zeka asistanısın. Aşağıdaki dökümanlar hakkında soruları yanıtlıyorsun.
-            
-            DÖKÜMANLAR:
-            {context}
-            
-            SORU: {question}
-            
-            Lütfen soruyu sadece verilen dökümanlar bağlamında yanıtla. 
-            Eğer yanıt dökümanlarda yoksa, bunu belirt.
-            Yanıtını Türkçe ver ve dostça bir dil kullan.
-            """
+            prompt = f"""Sen uzman bir döküman analisti ve yardımcı asistansın. Görevin kullanıcının sorularını yalnızca verilen kaynaklardan yanıtlamaktır.
+
+KAYNAK DÖKÜMANLAR:
+{context}
+
+KULLANICI SORUSU: {question}
+
+YÖNERGELER:
+1. Yalnızca verilen kaynaklardan alıntı yaparak cevap ver
+2. Hangi kaynaktan alıntı yaptığını belirt (örn: "Kaynak 1'e göre...")
+3. Eğer cevap kaynaklarda yoksa açıkça belirt
+4. Kısa, net ve Türkçe yanıt ver
+5. Spekülasyon yapma, sadece kaynaklardaki bilgileri kullan
+
+CEVAP:"""
             
             response = self.model.generate_content(prompt)
             return response.text.strip()

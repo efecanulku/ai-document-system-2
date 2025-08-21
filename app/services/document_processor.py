@@ -1,7 +1,8 @@
 import os
 import json
+import io
 from typing import Optional
-import PyPDF2
+import fitz  # PyMuPDF
 import pytesseract
 from PIL import Image
 from docx import Document as DocxDocument
@@ -42,8 +43,8 @@ class DocumentProcessor:
             keywords = await self.gemini_service.extract_keywords(content_text)
             embeddings = await self.gemini_service.generate_embeddings(content_text)
             
-            # Veritabanını güncelle
-            document.content_text = content_text[:10000]  # İlk 10k karakter
+            # Veritabanını güncelle - Tüm içerik kaydet
+            document.content_text = content_text  # Tüm içerik, truncate yok
             document.summary = summary
             document.keywords = json.dumps(keywords, ensure_ascii=False)
             document.embeddings = json.dumps(embeddings)
@@ -80,12 +81,27 @@ class DocumentProcessor:
             return None
     
     async def _extract_pdf_text(self, file_path: str) -> str:
-        """PDF'den metin çıkar"""
+        """PDF'den metin çıkar - PyMuPDF ile optimize edilmiş"""
         text = ""
-        with open(file_path, 'rb') as file:
-            pdf_reader = PyPDF2.PdfReader(file)
-            for page in pdf_reader.pages:
-                text += page.extract_text() + "\n"
+        try:
+            pdf_document = fitz.open(file_path)
+            for page_num in range(pdf_document.page_count):
+                page = pdf_document[page_num]
+                page_text = page.get_text()
+                if page_text.strip():
+                    text += page_text + "\n"
+                else:
+                    # Eğer metin yoksa OCR dene
+                    pix = page.get_pixmap()
+                    img_data = pix.tobytes("png")
+                    try:
+                        ocr_text = pytesseract.image_to_string(Image.open(io.BytesIO(img_data)), lang='tur+eng')
+                        text += ocr_text + "\n"
+                    except:
+                        pass
+            pdf_document.close()
+        except Exception as e:
+            print(f"PDF extraction error: {e}")
         return text.strip()
     
     async def _extract_docx_text(self, file_path: str) -> str:
@@ -128,20 +144,30 @@ class DocumentProcessor:
             return file.read()
     
     async def create_document_chunks(self, document: Document, content_text: str, db: Session):
-        """Dökümanı parçalara böl ve kaydet"""
-        chunks = self._split_text_into_chunks(content_text)
+        """Dökümanı parçalara böl ve kaydet - Optimize edilmiş"""
+        chunks = self._split_text_into_chunks(content_text, chunk_size=500, overlap=100)
         
-        for i, chunk_text in enumerate(chunks):
-            # Her parça için embedding oluştur
-            chunk_embeddings = await self.gemini_service.generate_embeddings(chunk_text)
+        # Batch processing için chunks'ları grupla
+        batch_size = 5
+        for i in range(0, len(chunks), batch_size):
+            batch_chunks = chunks[i:i+batch_size]
             
-            chunk = DocumentChunk(
-                document_id=document.id,
-                chunk_text=chunk_text,
-                chunk_index=i,
-                embeddings=json.dumps(chunk_embeddings)
-            )
-            db.add(chunk)
+            for j, chunk_text in enumerate(batch_chunks):
+                chunk_index = i + j
+                
+                # Her parça için embedding oluştur
+                chunk_embeddings = await self.gemini_service.generate_embeddings(chunk_text)
+                
+                chunk = DocumentChunk(
+                    document_id=document.id,
+                    chunk_text=chunk_text,
+                    chunk_index=chunk_index,
+                    embeddings=json.dumps(chunk_embeddings)
+                )
+                db.add(chunk)
+            
+            # Batch'i commit et
+            db.commit()
     
     def _split_text_into_chunks(self, text: str, chunk_size: int = 1000, overlap: int = 200) -> list:
         """Metni overlapping parçalara böl"""

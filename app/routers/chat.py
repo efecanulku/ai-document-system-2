@@ -6,7 +6,7 @@ import json
 from app.database.database import get_db
 from app.models.user import User
 from app.models.chat import ChatSession, ChatMessage
-from app.models.document import Document
+from app.models.document import Document, DocumentChunk
 from app.models.schemas import (
     ChatRequest, ChatResponse, ChatSession as ChatSessionSchema,
     ChatMessage as ChatMessageSchema
@@ -16,6 +16,53 @@ from app.services.gemini_service import GeminiService
 
 router = APIRouter()
 gemini_service = GeminiService()
+
+async def get_relevant_chunks_for_chat(query: str, user_id: int, db: Session):
+    """Chat için en alakalı chunk'ları bul"""
+    try:
+        # Query embedding'i oluştur
+        import google.generativeai as genai
+        import numpy as np
+        import json
+        
+        query_response = genai.embed_content(
+            model="models/embedding-001",
+            content=query,
+            task_type="retrieval_query"
+        )
+        query_embedding = query_response['embedding']
+        
+        # Kullanıcının tüm chunk'larını al
+        chunks = db.query(DocumentChunk).join(Document).filter(
+            Document.user_id == user_id,
+            DocumentChunk.embeddings.isnot(None)
+        ).all()
+        
+        # Cosine similarity hesapla
+        results = []
+        for chunk in chunks:
+            try:
+                chunk_embedding = json.loads(chunk.embeddings)
+                similarity = np.dot(query_embedding, chunk_embedding) / (
+                    np.linalg.norm(query_embedding) * np.linalg.norm(chunk_embedding)
+                )
+                
+                if similarity > 0.4:  # Chat için daha yüksek threshold
+                    results.append({
+                        'document_id': chunk.document_id,
+                        'chunk_text': chunk.chunk_text,
+                        'score': float(similarity)
+                    })
+            except:
+                continue
+        
+        # En iyi chunk'ları döndür
+        results.sort(key=lambda x: x['score'], reverse=True)
+        return results[:10]  # Chat için en iyi 10 chunk
+        
+    except Exception as e:
+        print(f"Chat chunk search error: {e}")
+        return []
 
 @router.post("/sessions", response_model=ChatSessionSchema)
 async def create_chat_session(
@@ -104,36 +151,27 @@ async def chat_with_ai(
         )
         db.add(user_message)
         
-        # Kullanıcının dökümanlarından bağlamsal olanları bul
-        user_documents = db.query(Document).filter(
-            Document.user_id == current_user.id,
-            Document.processed == True
-        ).all()
+        # Chunk bazlı context arama - çok daha etkili
+        relevant_chunks = await get_relevant_chunks_for_chat(
+            chat_request.message, current_user.id, db
+        )
         
-        # AI ile sohbet et
+        # Context'i chunk'lardan oluştur
         context_docs = []
-        relevant_doc_ids = []
+        relevant_doc_ids = set()
         
-        if user_documents:
-            # Relevance scoring için döküman listesi hazırla
-            doc_list = []
-            for doc in user_documents:
-                doc_dict = {
-                    'id': doc.id,
-                    'filename': doc.filename,
-                    'content_text': doc.content_text or '',
+        for chunk_data in relevant_chunks[:5]:  # En iyi 5 chunk
+            doc = db.query(Document).filter(Document.id == chunk_data['document_id']).first()
+            if doc:
+                context_docs.append({
+                    'filename': doc.original_filename,
+                    'content_text': chunk_data['chunk_text'],  # Chunk text kullan
                     'summary': doc.summary or '',
-                    'embeddings': doc.embeddings
-                }
-                doc_list.append(doc_dict)
-            
-            # Benzer dökümanları bul
-            similar_docs = await gemini_service.search_similar_documents(
-                chat_request.message, doc_list
-            )
-            
-            context_docs = similar_docs[:3]  # En benzer 3 döküman
-            relevant_doc_ids = [doc['id'] for doc in context_docs]
+                    'chunk_score': chunk_data['score']
+                })
+                relevant_doc_ids.add(doc.id)
+        
+        relevant_doc_ids = list(relevant_doc_ids)
         
         # AI yanıtı al
         ai_response = await gemini_service.chat_with_context(

@@ -5,13 +5,61 @@ import json
 
 from app.database.database import get_db
 from app.models.user import User
-from app.models.document import Document
+from app.models.document import Document, DocumentChunk
 from app.models.schemas import SearchRequest, SearchResult, Document as DocumentSchema
 from app.utils.auth import get_current_active_user
 from app.services.gemini_service import GeminiService
 
 router = APIRouter()
 gemini_service = GeminiService()
+
+async def search_in_chunks(query: str, user_id: int, db: Session):
+    """Chunk'larda embedding tabanlı arama yap"""
+    try:
+        # Query embedding'i oluştur
+        import google.generativeai as genai
+        query_response = genai.embed_content(
+            model="models/embedding-001",
+            content=query,
+            task_type="retrieval_query"
+        )
+        query_embedding = query_response['embedding']
+        
+        # Kullanıcının tüm chunk'larını al
+        chunks = db.query(DocumentChunk).join(Document).filter(
+            Document.user_id == user_id,
+            DocumentChunk.embeddings.isnot(None)
+        ).limit(200).all()  # En fazla 200 chunk kontrol et
+        
+        # Cosine similarity hesapla
+        import numpy as np
+        results = []
+        
+        for chunk in chunks:
+            try:
+                chunk_embedding = json.loads(chunk.embeddings)
+                
+                # Cosine similarity
+                similarity = np.dot(query_embedding, chunk_embedding) / (
+                    np.linalg.norm(query_embedding) * np.linalg.norm(chunk_embedding)
+                )
+                
+                if similarity > 0.3:  # Threshold
+                    results.append({
+                        'document_id': chunk.document_id,
+                        'chunk_text': chunk.chunk_text,
+                        'score': float(similarity)
+                    })
+            except:
+                continue
+        
+        # En iyi 40 chunk'ı döndür
+        results.sort(key=lambda x: x['score'], reverse=True)
+        return results[:40]
+        
+    except Exception as e:
+        print(f"Chunk search error: {e}")
+        return []
 
 @router.post("/", response_model=SearchResult)
 async def search_documents(
@@ -36,88 +84,29 @@ async def search_documents(
         if not all_documents:
             return SearchResult(documents=[], total_results=0)
         
-        # Basit metin araması
-        text_filtered_docs = []
-        search_terms = search_request.query.lower().split()
+        # Chunk bazlı arama - çok daha performanslı
+        relevant_chunks = await search_in_chunks(search_request.query, current_user.id, db)
         
-        for doc in all_documents:
-            doc_text = ""
-            if doc.content_text:
-                doc_text += doc.content_text.lower()
-            if doc.summary:
-                doc_text += " " + doc.summary.lower()
-            if doc.keywords:
-                try:
-                    keywords = json.loads(doc.keywords)
-                    doc_text += " " + " ".join(keywords).lower()
-                except:
-                    pass
+        # Chunk'lardan dökümanları topla
+        document_scores = {}
+        for chunk_data in relevant_chunks:
+            doc_id = chunk_data['document_id']
+            score = chunk_data['score']
             
-            # Temel skorlama
-            score = 0
-            for term in search_terms:
-                if term in doc_text:
-                    score += doc_text.count(term)
-            
-            if score > 0:
-                text_filtered_docs.append((doc, score))
+            if doc_id in document_scores:
+                document_scores[doc_id] = max(document_scores[doc_id], score)
+            else:
+                document_scores[doc_id] = score
         
-        # AI tabanlı benzerlik araması
-        if text_filtered_docs:
-            # Döküman listesini hazırla
-            doc_list = []
-            for doc, _ in text_filtered_docs:
-                doc_dict = {
-                    'id': doc.id,
-                    'filename': doc.filename,
-                    'content_text': doc.content_text or '',
-                    'summary': doc.summary or '',
-                    'embeddings': doc.embeddings
-                }
-                doc_list.append(doc_dict)
-            
-            # AI ile benzer dökümanları bul
-            similar_docs = await gemini_service.search_similar_documents(
-                search_request.query, doc_list
-            )
-            
-            # Sonuçları birleştir
-            ai_doc_ids = [doc['id'] for doc in similar_docs]
-            final_docs = []
-            
-            # Önce AI sonuçları
-            for doc_dict in similar_docs:
-                doc = next((d for d, _ in text_filtered_docs if d.id == doc_dict['id']), None)
-                if doc and doc not in final_docs:
-                    final_docs.append(doc)
-            
-            # Sonra metin arama sonuçları
-            text_filtered_docs.sort(key=lambda x: x[1], reverse=True)
-            for doc, score in text_filtered_docs:
-                if doc.id not in ai_doc_ids and doc not in final_docs:
-                    final_docs.append(doc)
-        else:
-            # Sadece AI araması
-            doc_list = []
-            for doc in all_documents:
-                doc_dict = {
-                    'id': doc.id,
-                    'filename': doc.filename,
-                    'content_text': doc.content_text or '',
-                    'summary': doc.summary or '',
-                    'embeddings': doc.embeddings
-                }
-                doc_list.append(doc_dict)
-            
-            similar_docs = await gemini_service.search_similar_documents(
-                search_request.query, doc_list
-            )
-            
-            final_docs = []
-            for doc_dict in similar_docs:
-                doc = next((d for d in all_documents if d.id == doc_dict['id']), None)
-                if doc:
-                    final_docs.append(doc)
+        # En iyi skorlu dökümanları al
+        sorted_doc_ids = sorted(document_scores.keys(), 
+                              key=lambda x: document_scores[x], reverse=True)
+        
+        final_docs = []
+        for doc_id in sorted_doc_ids[:search_request.limit]:
+            doc = next((d for d in all_documents if d.id == doc_id), None)
+            if doc:
+                final_docs.append(doc)
         
         # Limit uygula
         limited_docs = final_docs[:search_request.limit]

@@ -12,7 +12,7 @@ class Document(Base):
     file_path = Column(String, nullable=False)
     file_type = Column(String, nullable=False)  # pdf, docx, xlsx, jpg, png, etc.
     file_size = Column(Integer, nullable=False)
-    content_text = Column(Text)  # Extracted text content
+    content_text = Column(Text)  # Extracted text content - Full content stored
     summary = Column(Text)  # AI generated summary
     keywords = Column(Text)  # AI generated keywords (JSON)
     embeddings = Column(Text)  # Vector embeddings for AI search (JSON)
