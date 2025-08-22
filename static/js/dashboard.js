@@ -21,20 +21,34 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function initializeDashboard() {
-    console.log('Initializing dashboard...');
+    console.log('🚀 Initializing dashboard...');
+    console.log('📍 Current pathname:', window.location.pathname);
+    console.log('🔐 Auth check passed');
+    
+    console.log('⚙️ Setting up event listeners...');
     setupEventListeners();
+    console.log('✅ Event listeners setup complete');
+    
+    console.log('📊 Loading dashboard data...');
     loadDashboardData();
     
     // Check if we should show a specific section
     const sectionToShow = localStorage.getItem('showSection');
+    console.log('🔍 Checking localStorage for showSection:', sectionToShow);
+    
     if (sectionToShow) {
         localStorage.removeItem('showSection'); // Clear it
+        console.log('📂 Found section to show:', sectionToShow);
+        
         setTimeout(() => {
+            console.log('⏰ Executing section switch after timeout...');
             switch(sectionToShow) {
                 case 'documents':
+                    console.log('📄 Switching to documents section...');
                     showDocumentsSection();
                     break;
                 case 'chat':
+                    console.log('💬 Switching to chat section...');
                     showChatSection();
                     break;
                 case 'search':
@@ -89,10 +103,78 @@ function showSearchSection() {
 }
 
 function setupEventListeners() {
+    console.log('🎛️ Setting up event listeners...');
+    
     // Document upload form
     const uploadForm = document.getElementById('documentUploadForm');
+    console.log('📋 Upload form found:', !!uploadForm);
     if (uploadForm) {
         uploadForm.addEventListener('submit', handleDocumentUpload);
+        console.log('✅ Submit event listener added to upload form');
+    }
+    
+    // File input handler
+    const fileInput = document.getElementById('documentFile');
+    console.log('📁 File input found:', !!fileInput);
+    if (fileInput) {
+        // Add multiple test listeners
+        fileInput.addEventListener('change', function(e) {
+            console.log('🔥 DIRECT CHANGE EVENT TRIGGERED!');
+            console.log('Files count:', e.target.files.length);
+            if (e.target.files.length > 0) {
+                console.log('📄 Selected file:', e.target.files[0].name);
+            }
+        });
+        
+        fileInput.addEventListener('change', handleFileSelection);
+        console.log('✅ Change event listener added to file input');
+        
+        // Test click detection
+        fileInput.addEventListener('click', function(e) {
+            console.log('👆 FILE INPUT DIRECTLY CLICKED!');
+        });
+        
+        // Debug element state
+        console.log('🔍 File input debug info:', {
+            id: fileInput.id,
+            type: fileInput.type,
+            disabled: fileInput.disabled,
+            offsetWidth: fileInput.offsetWidth,
+            offsetHeight: fileInput.offsetHeight,
+            parentElement: fileInput.parentElement?.className
+        });
+    }
+    
+    // Drag and drop handlers
+    const uploadZone = document.querySelector('.upload-zone-content');
+    console.log('🎯 Upload zone found:', !!uploadZone);
+    if (uploadZone) {
+        uploadZone.addEventListener('dragover', handleDragOver);
+        uploadZone.addEventListener('dragleave', handleDragLeave);
+        uploadZone.addEventListener('drop', handleDrop);
+        
+        // Add click handler to upload zone to trigger file input
+        uploadZone.addEventListener('click', function(e) {
+            console.log('🖱️ UPLOAD ZONE CLICKED!');
+            console.log('Target:', e.target.tagName, e.target.className);
+            
+            // Prevent default if clicking on input itself
+            if (e.target.tagName === 'INPUT') {
+                console.log('📎 Direct input click, allowing default');
+                return;
+            }
+            
+            // Find and trigger file input
+            const fileInput = document.getElementById('documentFile');
+            if (fileInput) {
+                console.log('🔧 Triggering file input click programmatically...');
+                fileInput.click();
+            } else {
+                console.error('❌ File input not found for zone click!');
+            }
+        });
+        
+        console.log('✅ Drag & drop + click event listeners added');
     }
 
     // Chat form
@@ -260,44 +342,284 @@ function updateFileTypeChart(fileTypes) {
 
 // Document upload handler
 async function handleDocumentUpload(e) {
+    console.log('🚀 handleDocumentUpload called');
     e.preventDefault();
     
+    console.log('📋 Form data processing...');
     const formData = new FormData(e.target);
     const file = formData.get('file');
     
+    console.log('📄 File from form:', file);
+    console.log('File details:', {
+        name: file?.name,
+        size: file?.size,
+        type: file?.type
+    });
+    
     if (!file) {
+        console.error('❌ No file found in form data');
         showError('Lütfen bir dosya seçin');
         return;
     }
 
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    console.log('🔘 Submit button found:', !!submitBtn);
+    console.log('Original button text:', originalText);
+    
     try {
-        showLoading();
+        console.log('⏳ Starting upload process...');
         
+        // Update button state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `
+            <span class="btn-icon">
+                <i class="fas fa-spinner fa-spin"></i>
+            </span>
+            <span class="btn-text">Yükleniyor...</span>
+        `;
+        
+        console.log('✅ Button state updated');
+        showLoading();
+        console.log('✅ Loading overlay shown');
+        
+        console.log('🌐 Making POST request to /api/documents/upload');
         const response = await axios.post('/api/documents/upload', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }
         });
         
+        console.log('✅ Upload response received:', response.data);
         showSuccess('Döküman başarıyla yüklendi! AI analizi başlatıldı.');
-        e.target.reset();
-        hideDocumentUpload();
+        console.log('✅ Success message shown');
         
-        // Check if we're currently viewing documents section
-        const documentsSection = document.getElementById('documentsSection');
-        if (documentsSection && documentsSection.style.display !== 'none') {
-            // If we're in documents section, reload the documents list
-            setTimeout(() => loadDocuments(), 1000);
+        // Reset form and hide upload
+        console.log('🔄 Resetting form and clearing selection...');
+        
+        try {
+            e.target.reset();
+            console.log('✅ Form reset completed');
+        } catch (resetError) {
+            console.log('⚠️ Form reset error:', resetError);
         }
         
+        try {
+            clearFileSelection();
+            console.log('✅ File selection cleared');
+        } catch (clearError) {
+            console.log('⚠️ Clear selection error:', clearError);
+        }
+        
+        try {
+            hideDocumentUpload();
+            console.log('✅ Upload form hidden');
+        } catch (hideError) {
+            console.log('⚠️ Hide upload error:', hideError);
+        }
+        
+        // Check current section
+        const documentsSection = document.getElementById('documentsSection');
+        const isDocumentsVisible = documentsSection && documentsSection.style.display !== 'none';
+        console.log('📂 Documents section visible:', isDocumentsVisible);
+        
+        // Always reload documents regardless of current view
+        console.log('⏰ Scheduling document reload in 500ms...');
+        setTimeout(() => {
+            console.log('🔄 Executing document reload...');
+            if (typeof loadDocuments === 'function') {
+                console.log('✅ loadDocuments function exists, calling...');
+                loadDocuments();
+            } else {
+                console.error('❌ loadDocuments function not found!');
+            }
+        }, 500);
+        
         // Refresh dashboard data
-        setTimeout(() => loadDashboardData(), 2000);
+        console.log('⏰ Scheduling dashboard reload in 1000ms...');
+        setTimeout(() => {
+            console.log('🔄 Executing dashboard reload...');
+            if (typeof loadDashboardData === 'function') {
+                console.log('✅ loadDashboardData function exists, calling...');
+                loadDashboardData();
+            } else {
+                console.error('❌ loadDashboardData function not found!');
+            }
+        }, 1000);
         
     } catch (error) {
-        showError(error.response?.data?.detail || 'Döküman yüklenirken hata oluştu');
-        console.error('Error uploading document:', error);
+        console.error('💥 Upload error:', error);
+        console.error('Error details:', {
+            message: error.message,
+            response: error.response?.data,
+            status: error.response?.status
+        });
+        
+        const errorMsg = error.response?.data?.detail || 'Döküman yüklenirken hata oluştu';
+        
+        try {
+            showError(errorMsg);
+            console.log('✅ Error message displayed');
+        } catch (toastError) {
+            console.log('⚠️ Toast error:', toastError);
+            // Fallback to alert if toast fails
+            alert('Hata: ' + errorMsg);
+        }
     } finally {
+        console.log('🔚 Upload process finished, resetting button...');
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
         hideLoading();
+        console.log('✅ Button and loading reset complete');
+    }
+}
+
+// File selection handler
+function handleFileSelection(e) {
+    console.log('🔍 handleFileSelection called');
+    console.log('Event:', e);
+    console.log('Files:', e.target.files);
+    
+    const file = e.target.files[0];
+    const uploadZone = document.querySelector('.upload-zone-content');
+    
+    console.log('File object:', file);
+    console.log('Upload zone found:', !!uploadZone);
+    
+    if (!uploadZone) {
+        console.error('❌ Upload zone not found!');
+        return;
+    }
+    
+    const uploadIcon = uploadZone.querySelector('.upload-icon');
+    const uploadTitle = uploadZone.querySelector('h3');
+    const uploadText = uploadZone.querySelector('p');
+    
+    console.log('Upload elements found:', {
+        icon: !!uploadIcon,
+        title: !!uploadTitle,
+        text: !!uploadText
+    });
+    
+    if (file) {
+        console.log('📄 File selected:', {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            lastModified: file.lastModified
+        });
+        
+        // Show selected file feedback
+        uploadZone.style.borderColor = 'var(--neon-green)';
+        uploadZone.style.background = 'rgba(0, 255, 136, 0.05)';
+        
+        if (uploadIcon) {
+            uploadIcon.innerHTML = '<i class="fas fa-file-check"></i>';
+            console.log('✅ Icon updated to file-check');
+        }
+        
+        if (uploadTitle) {
+            uploadTitle.textContent = `Seçilen: ${file.name}`;
+            console.log('✅ Title updated:', uploadTitle.textContent);
+        }
+        
+        if (uploadText) {
+            uploadText.textContent = `${formatFileSize(file.size)} • Yüklemek için butona basın`;
+            console.log('✅ Text updated:', uploadText.textContent);
+        }
+        
+        // Add selected class for styling
+        uploadZone.classList.add('file-selected');
+        console.log('✅ file-selected class added');
+        
+    } else {
+        console.log('❌ No file selected');
+    }
+}
+
+function clearFileSelection() {
+    console.log('🧹 clearFileSelection called');
+    
+    const uploadZone = document.querySelector('.upload-zone-content');
+    console.log('Upload zone found for clear:', !!uploadZone);
+    
+    if (!uploadZone) {
+        console.log('❌ Upload zone not found, skipping clear');
+        return;
+    }
+    
+    const uploadIcon = uploadZone.querySelector('.upload-icon');
+    const uploadTitle = uploadZone.querySelector('h3');
+    const uploadText = uploadZone.querySelector('p');
+    
+    console.log('Clear elements found:', {
+        icon: !!uploadIcon,
+        title: !!uploadTitle,
+        text: !!uploadText
+    });
+    
+    // Reset to original state
+    uploadZone.style.borderColor = 'rgba(0, 255, 136, 0.3)';
+    uploadZone.style.background = 'rgba(0, 255, 136, 0.02)';
+    
+    if (uploadIcon) {
+        uploadIcon.innerHTML = '<i class="fas fa-cloud-upload-alt"></i>';
+        console.log('✅ Icon reset');
+    }
+    
+    if (uploadTitle) {
+        uploadTitle.textContent = 'Dosyalarınızı buraya sürükleyin';
+        console.log('✅ Title reset');
+    }
+    
+    if (uploadText) {
+        uploadText.textContent = 'veya dosya seçmek için tıklayın';
+        console.log('✅ Text reset');
+    }
+    
+    // Remove selected class
+    uploadZone.classList.remove('file-selected');
+    console.log('✅ File selection cleared completely');
+}
+
+// Drag and drop handlers
+function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const uploadZone = e.currentTarget;
+    uploadZone.classList.add('drag-over');
+    uploadZone.style.borderColor = 'var(--neon-green)';
+    uploadZone.style.background = 'rgba(0, 255, 136, 0.1)';
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const uploadZone = e.currentTarget;
+    uploadZone.classList.remove('drag-over');
+    if (!uploadZone.classList.contains('file-selected')) {
+        uploadZone.style.borderColor = 'rgba(0, 255, 136, 0.3)';
+        uploadZone.style.background = 'rgba(0, 255, 136, 0.02)';
+    }
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const uploadZone = e.currentTarget;
+    uploadZone.classList.remove('drag-over');
+    
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+        const fileInput = document.getElementById('documentFile');
+        fileInput.files = files;
+        
+        // Trigger file selection handler
+        const event = new Event('change');
+        fileInput.dispatchEvent(event);
     }
 }
 

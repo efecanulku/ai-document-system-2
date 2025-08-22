@@ -1,174 +1,241 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard - AI Döküman Yönetimi{% endblock %}
+{% block title %}Dashboard - SmartDocs AI{% endblock %}
 
 {% block content %}
 <div id="dashboardContent">
-    <!-- Stats Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 bg-primary text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-1">Toplam Döküman</h6>
-                            <h3 class="mb-0" id="totalDocs">0</h3>
-                        </div>
-                        <i class="fas fa-file-alt fa-2x opacity-75"></i>
-                    </div>
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="page-header-content">
+            <div>
+                <h1 class="page-title">Dashboard</h1>
+                <p class="page-subtitle">Döküman yönetim sisteminizin genel durumu</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn-modern btn-primary" onclick="showDocumentUpload()">
+                    <i class="fas fa-plus"></i>
+                    Döküman Yükle
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <h3 id="totalDocs">0</h3>
+                    <p>Toplam Döküman</p>
+                </div>
+                <div class="stat-icon">
+                    <i class="fas fa-file-alt"></i>
                 </div>
             </div>
         </div>
         
-        <div class="col-md-3">
-            <div class="card border-0 bg-success text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-1">İşlenen</h6>
-                            <h3 class="mb-0" id="processedDocs">0</h3>
-                        </div>
-                        <i class="fas fa-check-circle fa-2x opacity-75"></i>
-                    </div>
+        <div class="stat-card success">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <h3 id="processedDocs">0</h3>
+                    <p>İşlenen Döküman</p>
+                </div>
+                <div class="stat-icon success">
+                    <i class="fas fa-check-circle"></i>
                 </div>
             </div>
         </div>
         
-        <div class="col-md-3">
-            <div class="card border-0 bg-warning text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-1">İşleniyor</h6>
-                            <h3 class="mb-0" id="processingDocs">0</h3>
-                        </div>
-                        <i class="fas fa-cog fa-spin fa-2x opacity-75"></i>
-                    </div>
+        <div class="stat-card warning">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <h3 id="processingDocs">0</h3>
+                    <p>İşleniyor</p>
+                </div>
+                <div class="stat-icon warning">
+                    <i class="fas fa-cog fa-spin"></i>
                 </div>
             </div>
         </div>
         
-        <div class="col-md-3">
-            <div class="card border-0 bg-info text-white">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h6 class="card-title mb-1">İşlenme Oranı</h6>
-                            <h3 class="mb-0" id="processingRate">0%</h3>
-                        </div>
-                        <i class="fas fa-chart-pie fa-2x opacity-75"></i>
-                    </div>
+        <div class="stat-card info">
+            <div class="stat-content">
+                <div class="stat-info">
+                    <h3 id="processingRate">0%</h3>
+                    <p>İşlenme Oranı</p>
+                </div>
+                <div class="stat-icon info">
+                    <i class="fas fa-chart-pie"></i>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="row g-4 mb-4">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-bolt me-2"></i>Hızlı İşlemler
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <button class="btn btn-primary w-100" onclick="showDocumentUpload()">
-                                <i class="fas fa-upload me-2"></i>Döküman Yükle
-                            </button>
-                        </div>
-                        <div class="col-md-3">
-                            <button class="btn btn-success w-100" onclick="showChat()">
-                                <i class="fas fa-comments me-2"></i>AI Chat Başlat
-                            </button>
-                        </div>
-                        <div class="col-md-3">
-                            <button class="btn btn-info w-100" onclick="showSearch()">
-                                <i class="fas fa-search me-2"></i>Akıllı Arama
-                            </button>
-                        </div>
-                        <div class="col-md-3">
-                            <button class="btn btn-secondary w-100" onclick="showDocuments()">
-                                <i class="fas fa-list me-2"></i>Dökümanları Listele
-                            </button>
-                        </div>
+    <div class="card-modern mb-6">
+        <div class="card-header-modern">
+            <h2 class="card-title">
+                <i class="fas fa-bolt"></i>
+                Hızlı İşlemler
+            </h2>
+        </div>
+        <div class="card-body-modern">
+            <div class="quick-actions-grid">
+                <button class="quick-action-card" onclick="showDocumentUpload()">
+                    <div class="quick-action-icon">
+                        <i class="fas fa-upload"></i>
                     </div>
-                </div>
+                    <h3>Döküman Yükle</h3>
+                    <p>Yeni döküman ekleyin</p>
+                </button>
+                
+                <button class="quick-action-card" onclick="showChatSection()">
+                    <div class="quick-action-icon gradient-success">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI Chat</h3>
+                    <p>Dökümanlarınızla sohbet edin</p>
+                </button>
+                
+                <button class="quick-action-card" onclick="showSearchSection()">
+                    <div class="quick-action-icon gradient-secondary">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <h3>Akıllı Arama</h3>
+                    <p>Anlamsal arama yapın</p>
+                </button>
+                
+                <button class="quick-action-card" onclick="showDocumentsSection()">
+                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
+                        <i class="fas fa-list"></i>
+                    </div>
+                    <h3>Döküman Listesi</h3>
+                    <p>Tüm dökümanlarınızı görün</p>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Recent Documents -->
-    <div class="row">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-clock me-2"></i>Son Yüklenen Dökümanlar
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div id="recentDocuments">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
+    <!-- Content Grid -->
+    <div class="dashboard-grid">
+        <!-- Recent Documents -->
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <h2 class="card-title">
+                    <i class="fas fa-clock"></i>
+                    Son Yüklenen Dökümanlar
+                </h2>
+            </div>
+            <div class="card-body-modern">
+                <div id="recentDocuments">
+                    <!-- Populated by JavaScript -->
                 </div>
             </div>
         </div>
         
-        <div class="col-md-4">
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="card-title mb-0">
-                        <i class="fas fa-chart-bar me-2"></i>Dosya Tipi Dağılımı
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div id="fileTypeChart">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
+        <!-- File Type Distribution -->
+        <div class="card-modern">
+            <div class="card-header-modern">
+                <h2 class="card-title">
+                    <i class="fas fa-chart-bar"></i>
+                    Dosya Tipi Dağılımı
+                </h2>
+            </div>
+            <div class="card-body-modern">
+                <div id="fileTypeChart">
+                    <!-- Populated by JavaScript -->
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Document Management Section (Hidden by default) -->
+<!-- Document Management Section -->
 <div id="documentsSection" style="display: none;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3><i class="fas fa-file-alt me-2"></i>Dökümanlarım</h3>
-        <div>
-            <button class="btn btn-primary" onclick="showDocumentUpload()">
-                <i class="fas fa-plus me-2"></i>Yeni Döküman
-            </button>
-            <button class="btn btn-secondary" onclick="showDashboard()">
-                <i class="fas fa-arrow-left me-2"></i>Dashboard'a Dön
-            </button>
+    <!-- Futuristic Header -->
+    <div class="docs-header">
+        <div class="docs-header-content">
+            <div class="docs-title-section">
+                <div class="docs-icon">
+                    <i class="fas fa-folder-open"></i>
+                </div>
+                <div class="docs-title-text">
+                    <h1 class="docs-title">Dökümanlarım</h1>
+                    <p class="docs-subtitle">Yüklediğiniz tüm dökümanları yönetin</p>
+                </div>
+            </div>
+            <div class="docs-actions">
+                <button class="btn-futuristic btn-primary" onclick="showDocumentUpload()">
+                    <span class="btn-icon">
+                        <i class="fas fa-plus"></i>
+                    </span>
+                    <span class="btn-text">Yeni Döküman</span>
+                </button>
+                <button class="btn-futuristic btn-secondary" onclick="showDashboardSection()">
+                    <span class="btn-icon">
+                        <i class="fas fa-arrow-left"></i>
+                    </span>
+                    <span class="btn-text">Dashboard</span>
+                </button>
+            </div>
         </div>
     </div>
     
-    <!-- File Upload Form -->
-    <div id="uploadForm" class="card mb-4" style="display: none;">
-        <div class="card-header">
-            <h5 class="mb-0">Döküman Yükle</h5>
-        </div>
-        <div class="card-body">
+    <!-- Upload Form -->
+    <div id="uploadForm" class="upload-container" style="display: none;">
+        <div class="upload-card">
+            <div class="upload-header">
+                <h2 class="upload-title">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Döküman Yükle
+                </h2>
+            </div>
             <form id="documentUploadForm" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="documentFile" class="form-label">Dosya Seçin</label>
-                    <input type="file" class="form-control" id="documentFile" name="file" 
-                           accept=".pdf,.docx,.doc,.xlsx,.xls,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.txt" required>
-                    <div class="form-text">
-                        Desteklenen formatlar: PDF, Word, Excel, Resimler, Metin dosyaları
+                <div class="upload-zone">
+                    <div class="upload-zone-content">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <h3>Dosyalarınızı buraya sürükleyin</h3>
+                        <p>veya dosya seçmek için tıklayın</p>
+                        <input type="file" id="documentFile" name="file" 
+                               accept=".pdf,.docx,.doc,.xlsx,.xls,.jpg,.jpeg,.png,.gif,.bmp,.tiff,.txt">
                     </div>
                 </div>
-                <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-upload me-2"></i>Yükle
+                <div class="upload-formats">
+                    <p class="formats-title">Desteklenen formatlar:</p>
+                    <div class="formats-grid">
+                        <span class="format-chip">
+                            <i class="fas fa-file-pdf"></i>
+                            PDF
+                        </span>
+                        <span class="format-chip">
+                            <i class="fas fa-file-word"></i>
+                            Word
+                        </span>
+                        <span class="format-chip">
+                            <i class="fas fa-file-excel"></i>
+                            Excel
+                        </span>
+                        <span class="format-chip">
+                            <i class="fas fa-file-image"></i>
+                            Resimler
+                        </span>
+                        <span class="format-chip">
+                            <i class="fas fa-file-alt"></i>
+                            Metin
+                        </span>
+                    </div>
+                </div>
+                <div class="upload-actions">
+                    <button type="submit" class="btn-futuristic btn-primary btn-large">
+                        <span class="btn-icon">
+                            <i class="fas fa-upload"></i>
+                        </span>
+                        <span class="btn-text">Yükle ve Analiz Et</span>
                     </button>
-                    <button type="button" class="btn btn-secondary" onclick="hideDocumentUpload()">
-                        İptal
+                    <button type="button" class="btn-futuristic btn-ghost" onclick="hideDocumentUpload()">
+                        <span class="btn-text">İptal</span>
                     </button>
                 </div>
             </form>
@@ -176,64 +243,92 @@
     </div>
     
     <!-- Documents List -->
-    <div class="card">
-        <div class="card-body">
-            <div id="documentsList">
-                <!-- Will be populated by JavaScript -->
+    <div class="docs-list-container">
+        <div class="docs-list-header">
+            <h2 class="docs-list-title">
+                <i class="fas fa-list"></i>
+                Döküman Listesi
+            </h2>
+            <div class="docs-list-controls">
+                <button class="control-btn" id="viewToggle" onclick="toggleView()">
+                    <i class="fas fa-th-large"></i>
+                </button>
+                <button class="control-btn" onclick="refreshDocuments()">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+        </div>
+        <div class="docs-list-content">
+            <div id="documentsList" class="docs-grid">
+                <!-- Populated by JavaScript -->
             </div>
         </div>
     </div>
 </div>
 
-<!-- Chat Section (Hidden by default) -->
+<!-- Chat Section -->
 <div id="chatSection" style="display: none;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3><i class="fas fa-comments me-2"></i>AI Chat</h3>
-        <button class="btn btn-secondary" onclick="showDashboard()">
-            <i class="fas fa-arrow-left me-2"></i>Dashboard'a Dön
-        </button>
+    <div class="page-header">
+        <div class="page-header-content">
+            <div>
+                <h1 class="page-title">
+                    <i class="fas fa-robot"></i>
+                    AI Chat
+                </h1>
+                <p class="page-subtitle">Dökümanlarınız hakkında AI'ya sorular sorun</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn-modern btn-primary" onclick="createNewChatSession()">
+                    <i class="fas fa-plus"></i>
+                    Yeni Sohbet
+                </button>
+                <button class="btn-modern btn-secondary" onclick="showDashboardSection()">
+                    <i class="fas fa-arrow-left"></i>
+                    Dashboard
+                </button>
+            </div>
+        </div>
     </div>
     
-    <div class="row">
-        <div class="col-md-3">
-            <!-- Chat Sessions -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="mb-0">Sohbet Oturumları</h6>
-                        <button class="btn btn-sm btn-primary" onclick="createNewChatSession()">
-                            <i class="fas fa-plus"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body p-0">
-                    <div id="chatSessions" class="list-group list-group-flush">
-                        <!-- Will be populated by JavaScript -->
-                    </div>
+    <div class="chat-layout">
+        <!-- Chat Sessions Sidebar -->
+        <div class="chat-sidebar card-modern">
+            <div class="card-header-modern">
+                <h3 class="card-title">Sohbet Oturumları</h3>
+            </div>
+            <div class="card-body-modern p-0">
+                <div id="chatSessions" class="chat-sessions-list">
+                    <!-- Populated by JavaScript -->
                 </div>
             </div>
         </div>
         
-        <div class="col-md-9">
-            <!-- Chat Interface -->
-            <div class="card chat-card">
-                <div class="card-header">
-                    <h6 class="mb-0" id="chatSessionName">AI Asistan</h6>
-                </div>
-                <div class="card-body chat-body" id="chatMessages" style="height: 400px; overflow-y: auto;">
-                    <div class="text-muted text-center p-4">
-                        Merhaba! Size nasıl yardımcı olabilirim? Dökümanlarınız hakkında soru sorabilirsiniz.
+        <!-- Chat Interface -->
+        <div class="chat-main">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <h3 id="chatSessionName">AI Asistan</h3>
+                    <div class="chat-status">
+                        <span class="status-dot"></span>
+                        Çevrimiçi
                     </div>
                 </div>
-                <div class="card-footer">
-                    <form id="chatForm">
-                        <div class="input-group">
-                            <input type="text" class="form-control" id="chatInput" 
-                                   placeholder="Mesajınızı yazın..." required>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-paper-plane"></i>
-                            </button>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="welcome-message">
+                        <div class="welcome-content">
+                            <i class="fas fa-robot"></i>
+                            <h4>Merhaba! Size nasıl yardımcı olabilirim?</h4>
+                            <p>Dökümanlarınız hakkında soru sorabilir, analiz isteyebilir veya bilgi arayabilirsiniz.</p>
                         </div>
+                    </div>
+                </div>
+                <div class="chat-input">
+                    <form id="chatForm" class="chat-form">
+                        <input type="text" id="chatInput" class="form-control-modern" 
+                               placeholder="Mesajınızı yazın..." required>
+                        <button type="submit" class="btn-modern btn-primary">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </form>
                 </div>
             </div>
@@ -241,50 +336,1257 @@
     </div>
 </div>
 
-<!-- Search Section (Hidden by default) -->
+<!-- Search Section -->
 <div id="searchSection" style="display: none;">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3><i class="fas fa-search me-2"></i>Akıllı Arama</h3>
-        <button class="btn btn-secondary" onclick="showDashboard()">
-            <i class="fas fa-arrow-left me-2"></i>Dashboard'a Dön
-        </button>
+    <div class="page-header">
+        <div class="page-header-content">
+            <div>
+                <h1 class="page-title">
+                    <i class="fas fa-magnifying-glass"></i>
+                    Akıllı Arama
+                </h1>
+                <p class="page-subtitle">Dökümanlarınızda anlamsal arama yapın</p>
+            </div>
+            <div class="page-actions">
+                <button class="btn-modern btn-secondary" onclick="showDashboardSection()">
+                    <i class="fas fa-arrow-left"></i>
+                    Dashboard
+                </button>
+            </div>
+        </div>
     </div>
     
     <!-- Search Form -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form id="searchForm">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="mb-3">
-                            <input type="text" class="form-control form-control-lg" 
-                                   id="searchQuery" placeholder="Dökümanlarınızda ara..." required>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="mb-3">
-                            <select class="form-select" id="searchFileType">
-                                <option value="">Tüm Dosya Tipleri</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="mb-3">
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-search me-2"></i>Ara
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
+    <div class="search-container">
+        <form id="searchForm" class="search-form">
+            <div class="search-input-group">
+                <label class="form-label-modern">Arama Terimi</label>
+                <input type="text" id="searchQuery" class="form-control-modern" 
+                       placeholder="Dökümanlarınızda aradığınızı yazın..." required>
+            </div>
+            <div class="search-filter-group">
+                <label class="form-label-modern">Dosya Tipi</label>
+                <select id="searchFileType" class="form-control-modern">
+                    <option value="">Tüm Dosya Tipleri</option>
+                </select>
+            </div>
+            <div class="search-button-group">
+                <button type="submit" class="btn-modern btn-primary btn-lg">
+                    <i class="fas fa-search"></i>
+                    Ara
+                </button>
+            </div>
+        </form>
     </div>
     
     <!-- Search Results -->
     <div id="searchResults">
-        <!-- Will be populated by JavaScript -->
+        <!-- Populated by JavaScript -->
     </div>
 </div>
+
+<style>
+/* ========== FUTURISTIC DOCUMENTS SECTION ========== */
+
+/* Document Header */
+.docs-header {
+    margin-bottom: var(--space-8);
+    padding: var(--space-6);
+    background: var(--bg-glass);
+    border-radius: var(--radius-2xl);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    backdrop-filter: blur(20px);
+    position: relative;
+    overflow: hidden;
+}
+
+.docs-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(0, 255, 136, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.docs-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+    position: relative;
+    z-index: 1;
+}
+
+.docs-title-section {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+}
+
+.docs-icon {
+    width: 4rem;
+    height: 4rem;
+    background: var(--gradient-neon);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: var(--bg-primary);
+    box-shadow: var(--shadow-neon);
+    animation: pulse-glow 3s ease-in-out infinite;
+}
+
+.docs-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0;
+    background: var(--gradient-neon);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.docs-subtitle {
+    color: var(--text-secondary);
+    margin: var(--space-2) 0 0 0;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+.docs-actions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+/* Futuristic Buttons */
+.btn-futuristic {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-6);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    background: var(--bg-glass);
+    color: var(--text-primary);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+
+.btn-futuristic::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: var(--transition-slow);
+}
+
+.btn-futuristic:hover::before {
+    left: 100%;
+}
+
+.btn-futuristic.btn-primary {
+    background: var(--gradient-neon);
+    color: var(--bg-primary);
+    border-color: var(--neon-green);
+}
+
+.btn-futuristic.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(0, 255, 136, 0.5);
+}
+
+.btn-futuristic.btn-secondary {
+    background: rgba(139, 92, 246, 0.1);
+    border-color: rgba(139, 92, 246, 0.3);
+    color: #8b5cf6;
+}
+
+.btn-futuristic.btn-secondary:hover {
+    background: rgba(139, 92, 246, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.btn-futuristic.btn-ghost {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.2);
+    color: var(--text-secondary);
+}
+
+.btn-futuristic.btn-ghost:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.btn-futuristic.btn-large {
+    padding: var(--space-4) var(--space-8);
+    font-size: 1rem;
+}
+
+.btn-icon {
+    transition: var(--transition-fast);
+}
+
+.btn-futuristic:hover .btn-icon {
+    transform: scale(1.1);
+}
+
+/* Upload Container */
+.upload-container {
+    margin-bottom: var(--space-8);
+}
+
+.upload-card {
+    background: var(--bg-glass);
+    border-radius: var(--radius-2xl);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    position: relative;
+}
+
+.upload-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 30% 30%, rgba(0, 255, 136, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.upload-header {
+    padding: var(--space-6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 1;
+}
+
+.upload-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.upload-title i {
+    color: var(--neon-green);
+}
+
+.upload-zone {
+    padding: var(--space-8);
+    position: relative;
+    z-index: 1;
+}
+
+.upload-zone-content {
+    border: 2px dashed rgba(0, 255, 136, 0.3);
+    border-radius: var(--radius-xl);
+    padding: var(--space-12);
+    text-align: center;
+    transition: var(--transition-normal);
+    background: rgba(0, 255, 136, 0.02);
+    position: relative;
+    cursor: pointer;
+}
+
+.upload-zone-content:hover {
+    border-color: var(--neon-green);
+    background: rgba(0, 255, 136, 0.05);
+    transform: translateY(-2px);
+}
+
+.upload-zone-content.file-selected {
+    border-color: var(--neon-green) !important;
+    background: rgba(0, 255, 136, 0.08) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+}
+
+.upload-zone-content.file-selected .upload-icon {
+    background: linear-gradient(135deg, #10b981 0%, #00ff88 100%);
+    animation: pulse-success 2s ease-in-out infinite;
+}
+
+@keyframes pulse-success {
+    0%, 100% {
+        box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 25px rgba(16, 185, 129, 0.8);
+    }
+}
+
+.upload-zone-content.drag-over {
+    border-color: var(--neon-green) !important;
+    background: rgba(0, 255, 136, 0.1) !important;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+}
+
+.upload-icon {
+    width: 5rem;
+    height: 5rem;
+    background: var(--gradient-neon);
+    border-radius: var(--radius-xl);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: var(--bg-primary);
+    margin: 0 auto var(--space-6);
+    box-shadow: var(--shadow-neon);
+    animation: float 3s ease-in-out infinite;
+}
+
+.upload-zone-content h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-2) 0;
+    color: var(--text-primary);
+}
+
+.upload-zone-content p {
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-4) 0;
+    font-size: 1rem;
+}
+
+.upload-zone-content input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.upload-formats {
+    padding: 0 var(--space-8) var(--space-6);
+    position: relative;
+    z-index: 1;
+}
+
+.formats-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin: 0 0 var(--space-4) 0;
+    text-align: center;
+}
+
+.formats-grid {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.format-chip {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    transition: var(--transition-fast);
+}
+
+.format-chip:hover {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: rgba(0, 255, 136, 0.3);
+    color: var(--neon-green);
+    transform: translateY(-1px);
+}
+
+.upload-actions {
+    padding: var(--space-6);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    gap: var(--space-4);
+    justify-content: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Documents List */
+.docs-list-container {
+    background: var(--bg-glass);
+    border-radius: var(--radius-2xl);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    position: relative;
+}
+
+.docs-list-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 10% 10%, rgba(0, 255, 136, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 90% 90%, rgba(139, 92, 246, 0.03) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.docs-list-header {
+    padding: var(--space-6);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.docs-list-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.docs-list-title i {
+    color: var(--neon-green);
+}
+
+.docs-list-controls {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.control-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    border: none;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.control-btn:hover {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: rgba(0, 255, 136, 0.3);
+    color: var(--neon-green);
+    transform: translateY(-1px);
+}
+
+.docs-list-content {
+    padding: var(--space-6);
+    position: relative;
+    z-index: 1;
+}
+
+.docs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-4);
+}
+
+.docs-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+/* Document Cards */
+.doc-card {
+    background: var(--bg-glass);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+}
+
+.doc-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 255, 136, 0.02) 0%, rgba(139, 92, 246, 0.02) 100%);
+    opacity: 0;
+    transition: var(--transition-normal);
+}
+
+.doc-card:hover::before {
+    opacity: 1;
+}
+
+.doc-card:hover {
+    border-color: rgba(0, 255, 136, 0.3);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 40px rgba(0, 255, 136, 0.1);
+}
+
+.doc-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    position: relative;
+    z-index: 1;
+}
+
+.doc-file-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: white;
+    background: var(--gradient-neon);
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+}
+
+.doc-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.doc-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-1) 0;
+    color: var(--text-primary);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.doc-meta {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.doc-actions {
+    display: flex;
+    gap: var(--space-1);
+    opacity: 0;
+    transition: var(--transition-fast);
+}
+
+.doc-card:hover .doc-actions {
+    opacity: 1;
+}
+
+.doc-action-btn {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+}
+
+.doc-action-btn:hover {
+    background: var(--gradient-neon);
+    color: var(--bg-primary);
+    transform: scale(1.1);
+}
+
+.doc-card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.doc-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+}
+
+.doc-status-badge {
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.doc-status-badge.processed {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.doc-status-badge.processing {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.doc-progress {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    margin-bottom: var(--space-3);
+}
+
+.doc-progress-bar {
+    height: 100%;
+    background: var(--gradient-neon);
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+.doc-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* Empty State */
+.docs-empty {
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--text-secondary);
+}
+
+.docs-empty i {
+    font-size: 4rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-6);
+    opacity: 0.5;
+}
+
+.docs-empty h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-3) 0;
+    color: var(--text-primary);
+}
+
+.docs-empty p {
+    margin: 0 0 var(--space-6) 0;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.6;
+}
+
+/* Page Layout */
+.page-header {
+    margin-bottom: var(--space-8);
+}
+
+.page-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
+}
+
+.page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.page-subtitle {
+    color: var(--gray-600);
+    margin: var(--space-2) 0 0 0;
+    font-size: 1rem;
+}
+
+.page-actions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.card-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+/* Quick Actions */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--space-4);
+}
+
+.quick-action-card {
+    background: var(--white);
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: var(--space-6);
+    text-align: center;
+    cursor: pointer;
+    transition: var(--transition-normal);
+    text-decoration: none;
+    color: inherit;
+}
+
+.quick-action-card:hover {
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.quick-action-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    color: white;
+    background: var(--gradient-primary);
+    margin: 0 auto var(--space-4);
+}
+
+.quick-action-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 var(--space-2) 0;
+    color: var(--gray-900);
+}
+
+.quick-action-card p {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin: 0;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--space-6);
+}
+
+/* Upload Area */
+.upload-area {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius-lg);
+    padding: var(--space-8);
+    text-align: center;
+    transition: var(--transition-normal);
+    position: relative;
+    background: var(--gray-50);
+}
+
+.upload-area:hover {
+    border-color: var(--primary-color);
+    background: rgba(37, 99, 235, 0.05);
+}
+
+.upload-content i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: var(--space-4);
+}
+
+.upload-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+    color: var(--gray-800);
+}
+
+.upload-content p {
+    color: var(--gray-600);
+    margin-bottom: var(--space-4);
+}
+
+.upload-content input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.upload-info {
+    margin-top: var(--space-6);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--gray-200);
+}
+
+.supported-formats {
+    display: flex;
+    gap: var(--space-2);
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: var(--space-2);
+}
+
+.format-tag {
+    padding: var(--space-1) var(--space-3);
+    background: var(--primary-color);
+    color: white;
+    border-radius: var(--radius-full);
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.upload-actions {
+    display: flex;
+    gap: var(--space-3);
+    justify-content: center;
+    margin-top: var(--space-6);
+}
+
+/* Chat Layout */
+.chat-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: var(--space-6);
+    height: 600px;
+}
+
+.chat-sidebar {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-sessions-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.chat-session-item {
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--gray-200);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-session-item:hover {
+    background: var(--gray-50);
+}
+
+.chat-session-item.active {
+    background: rgba(37, 99, 235, 0.1);
+    border-left: 3px solid var(--primary-color);
+}
+
+.chat-main {
+    height: 100%;
+}
+
+.welcome-message {
+    padding: var(--space-8);
+    text-align: center;
+}
+
+.welcome-content {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.welcome-content i {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: var(--space-4);
+}
+
+.welcome-content h4 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+    color: var(--gray-800);
+}
+
+.welcome-content p {
+    color: var(--gray-600);
+    line-height: 1.6;
+}
+
+.chat-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--success-color);
+}
+
+/* Search Layout */
+.search-container {
+    margin-bottom: var(--space-8);
+}
+
+.search-form {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: var(--space-4);
+    align-items: end;
+}
+
+.search-filter-group,
+.search-input-group,
+.search-button-group {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Recent Documents Styles */
+.recent-document-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4);
+    border-radius: var(--radius-md);
+    transition: var(--transition-fast);
+    margin-bottom: var(--space-3);
+}
+
+.recent-document-item:hover {
+    background: var(--gray-50);
+}
+
+.recent-doc-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: white;
+    background: var(--gradient-primary);
+}
+
+.recent-doc-info {
+    flex: 1;
+}
+
+.recent-doc-title {
+    font-weight: 600;
+    font-size: 0.875rem;
+    margin: 0 0 var(--space-1) 0;
+    color: var(--gray-900);
+}
+
+.recent-doc-meta {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    margin: 0;
+}
+
+.recent-doc-status {
+    font-size: 0.75rem;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-full);
+    font-weight: 500;
+}
+
+.recent-doc-status.processed {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--success-color);
+}
+
+.recent-doc-status.processing {
+    background: rgba(245, 158, 11, 0.1);
+    color: var(--warning-color);
+}
+
+/* File Type Chart */
+.file-type-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--space-3) 0;
+    border-bottom: 1px solid var(--gray-100);
+}
+
+.file-type-item:last-child {
+    border-bottom: none;
+}
+
+.file-type-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.file-type-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: white;
+    background: var(--gradient-primary);
+}
+
+.file-type-stats {
+    text-align: right;
+}
+
+.file-type-count {
+    font-weight: 600;
+    color: var(--gray-900);
+}
+
+.file-type-percentage {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+}
+
+/* Additional Doc Summary Styles */
+.doc-summary {
+    margin: var(--space-3) 0;
+    padding: var(--space-3);
+    background: rgba(0, 255, 136, 0.05);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--neon-green);
+}
+
+.doc-summary p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* View Toggle Functions */
+.docs-list .doc-card {
+    display: flex;
+    padding: var(--space-4);
+}
+
+.docs-list .doc-card-header {
+    margin-bottom: 0;
+}
+
+.docs-list .doc-card-body {
+    margin-left: var(--space-4);
+    min-width: 0;
+    flex: 1;
+}
+
+.docs-list .doc-file-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+}
+
+.docs-list .doc-actions {
+    flex-direction: column;
+    opacity: 1;
+    margin-left: var(--space-4);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .docs-grid {
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .chat-layout {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+    
+    .chat-sidebar {
+        height: 200px;
+    }
+    
+    .docs-header-content {
+        flex-direction: column;
+        align-items: stretch;
+        gap: var(--space-6);
+    }
+    
+    .docs-title-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: var(--space-3);
+    }
+    
+    .docs-actions {
+        justify-content: center;
+    }
+    
+    .docs-grid {
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .page-actions {
+        justify-content: stretch;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .search-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .docs-header {
+        padding: var(--space-4);
+    }
+    
+    .docs-title {
+        font-size: 2rem;
+    }
+    
+    .docs-icon {
+        width: 3rem;
+        height: 3rem;
+        font-size: 1.25rem;
+    }
+    
+    .upload-zone-content {
+        padding: var(--space-8);
+    }
+    
+    .upload-icon {
+        width: 4rem;
+        height: 4rem;
+        font-size: 1.5rem;
+    }
+    
+    .formats-grid {
+        gap: var(--space-2);
+    }
+    
+    .format-chip {
+        font-size: 0.7rem;
+        padding: var(--space-1) var(--space-3);
+    }
+    
+    .docs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .page-header-content {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .page-actions {
+        justify-content: stretch;
+    }
+    
+    .quick-actions-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .search-form {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .quick-actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
 
 <script src="/static/js/dashboard.js"></script>
 {% endblock %}

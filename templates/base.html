@@ -3,105 +3,367 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}AI Döküman Yönetim Sistemi{% endblock %}</title>
+    <title>{% block title %}SmartDocs AI - Next-Generation Document Intelligence{% endblock %}</title>
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
     <!-- Custom CSS -->
     <link href="/static/css/style.css" rel="stylesheet">
     
     {% block extra_css %}{% endblock %}
+    
+    <!-- Meta Tags for SEO -->
+    <meta name="description" content="Next-generation AI-powered document management system with advanced vector search, OCR, and conversational AI capabilities.">
+    <meta name="keywords" content="AI, document management, vector search, OCR, machine learning, automation">
+    <meta name="author" content="SmartDocs AI">
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="SmartDocs AI - Next-Generation Document Intelligence">
+    <meta property="og:description" content="Transform your documents with cutting-edge AI technology.">
+    <meta property="og:type" content="website">
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#00ff88">
+    <meta name="msapplication-navbutton-color" content="#00ff88">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container">
-            <a class="navbar-brand" href="/">
-                <i class="fas fa-brain me-2"></i>
-                AI Döküman Yönetimi
+    <nav class="navbar-futuristic">
+        <div class="navbar-content">
+            <a href="/" class="brand-futuristic">
+                <div class="brand-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <span>SmartDocs AI</span>
             </a>
             
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard">
-                            <i class="fas fa-tachometer-alt me-1"></i>Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showDocuments()">
-                            <i class="fas fa-file-alt me-1"></i>Dökümanlar
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showChat()">
-                            <i class="fas fa-comments me-1"></i>AI Chat
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" onclick="showSearch()">
-                            <i class="fas fa-search me-1"></i>Arama
-                        </a>
-                    </li>
-                </ul>
-                
-                <ul class="navbar-nav" id="authNav">
-                    <!-- Will be populated by JavaScript -->
-                </ul>
-            </div>
+            <ul class="nav-menu">
+                <li><a href="/dashboard" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </a></li>
+                <li><a href="#" onclick="showDocuments()" class="nav-link">
+                    <i class="fas fa-folder-open"></i>
+                    <span>Documents</span>
+                </a></li>
+                <li><a href="#" onclick="showChat()" class="nav-link">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Chat</span>
+                </a></li>
+                <li><a href="#" onclick="showSearch()" class="nav-link">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <span>Smart Search</span>
+                </a></li>
+                <li id="authNav">
+                    <!-- Populated by JavaScript -->
+                </li>
+            </ul>
         </div>
     </nav>
 
     <!-- Main Content -->
-    <main class="container-fluid py-4">
+    <main class="main-layout">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Toast Container -->
-    <div class="toast-container position-fixed bottom-0 end-0 p-3">
-        <div id="successToast" class="toast" role="alert">
-            <div class="toast-header bg-success text-white">
-                <i class="fas fa-check-circle me-2"></i>
-                <strong class="me-auto">Başarılı</strong>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+    <!-- Toast Notifications -->
+    <div class="toast-container">
+        <div id="successToast" class="toast-modern toast-success" style="display: none;">
+            <div class="toast-header-modern">
+                <i class="fas fa-check-circle"></i>
+                <strong>Success</strong>
             </div>
-            <div class="toast-body"></div>
+            <div class="toast-body-modern"></div>
         </div>
         
-        <div id="errorToast" class="toast" role="alert">
-            <div class="toast-header bg-danger text-white">
-                <i class="fas fa-exclamation-circle me-2"></i>
-                <strong class="me-auto">Hata</strong>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        <div id="errorToast" class="toast-modern toast-error" style="display: none;">
+            <div class="toast-header-modern">
+                <i class="fas fa-exclamation-circle"></i>
+                <strong>Error</strong>
             </div>
-            <div class="toast-body"></div>
+            <div class="toast-body-modern"></div>
+        </div>
+        
+        <div id="infoToast" class="toast-modern toast-info" style="display: none;">
+            <div class="toast-header-modern">
+                <i class="fas fa-info-circle"></i>
+                <strong>Info</strong>
+            </div>
+            <div class="toast-body-modern"></div>
         </div>
     </div>
 
     <!-- Loading Overlay -->
-    <div id="loadingModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 9999;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 10px; text-align: center;">
-            <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Yükleniyor...</span>
-            </div>
-            <div class="mt-3">Lütfen bekleyiniz...</div>
+    <div id="loadingModal" class="loading-overlay" style="display: none;">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h4 style="margin-bottom: var(--space-2); color: var(--text-primary);">Processing...</h4>
+            <p style="color: var(--text-secondary); margin: 0;">AI is analyzing your request</p>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Axios for HTTP requests -->
+    <!-- Background Effects -->
+    <div class="background-effects">
+        <div class="bg-grid"></div>
+        <div class="bg-gradient-1"></div>
+        <div class="bg-gradient-2"></div>
+    </div>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <!-- Custom JavaScript -->
     <script src="/static/js/auth.js"></script>
     <script src="/static/js/main.js"></script>
     
     {% block extra_js %}{% endblock %}
+
+    <style>
+    /* Additional Background Effects */
+    .background-effects {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        overflow: hidden;
+    }
+    
+    .bg-grid {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: grid-move 20s linear infinite;
+    }
+    
+    .bg-gradient-1 {
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.03) 0%, transparent 70%);
+        animation: gradient-rotate 30s linear infinite;
+    }
+    
+    .bg-gradient-2 {
+        position: absolute;
+        bottom: -50%;
+        right: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(0, 212, 255, 0.03) 0%, transparent 70%);
+        animation: gradient-rotate 25s linear infinite reverse;
+    }
+    
+    @keyframes grid-move {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(50px, 50px); }
+    }
+    
+    @keyframes gradient-rotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* Enhanced Loading Styles */
+    .loading-overlay {
+        background: radial-gradient(circle, rgba(10, 10, 15, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%);
+    }
+    
+    .loading-content {
+        background: var(--bg-glass);
+        border-radius: var(--radius-xl);
+        padding: var(--space-8);
+        border: 1px solid rgba(0, 255, 136, 0.2);
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-neon);
+    }
+    
+    /* Toast Enhancements */
+    .toast-success .toast-header-modern {
+        background: rgba(0, 255, 136, 0.2);
+        color: var(--neon-green);
+        border-bottom: 1px solid rgba(0, 255, 136, 0.3);
+    }
+    
+    .toast-error .toast-header-modern {
+        background: rgba(255, 0, 128, 0.2);
+        color: var(--neon-pink);
+        border-bottom: 1px solid rgba(255, 0, 128, 0.3);
+    }
+    
+    .toast-info .toast-header-modern {
+        background: rgba(0, 212, 255, 0.2);
+        color: var(--neon-blue);
+        border-bottom: 1px solid rgba(0, 212, 255, 0.3);
+    }
+    
+    /* Mobile Navigation Enhancements */
+    @media (max-width: 768px) {
+        .navbar-content {
+            flex-wrap: wrap;
+        }
+        
+        .nav-menu {
+            width: 100%;
+            flex-direction: column;
+            gap: var(--space-2);
+            margin-top: var(--space-4);
+            display: none;
+        }
+        
+        .nav-menu.mobile-open {
+            display: flex;
+        }
+        
+        .mobile-menu-toggle {
+            display: block;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: var(--space-2);
+        }
+    }
+    
+    @media (min-width: 769px) {
+        .mobile-menu-toggle {
+            display: none;
+        }
+        
+        .nav-menu {
+            display: flex !important;
+        }
+    }
+    
+    /* Performance Optimizations */
+    .navbar-futuristic {
+        will-change: background-color;
+    }
+    
+    .brand-icon {
+        will-change: transform;
+    }
+    
+    /* Accessibility Improvements */
+    .nav-link:focus,
+    .btn-futuristic:focus {
+        outline: 2px solid var(--neon-green);
+        outline-offset: 2px;
+    }
+    
+    /* Reduced Motion Support */
+    @media (prefers-reduced-motion: reduce) {
+        .bg-grid,
+        .bg-gradient-1,
+        .bg-gradient-2,
+        .brand-icon {
+            animation: none;
+        }
+        
+        .spinner {
+            animation: none;
+            border: 3px solid var(--neon-green);
+        }
+    }
+    </style>
+
+    <script>
+    // Enhanced navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu toggle
+        const navbar = document.querySelector('.navbar-content');
+        if (window.innerWidth <= 768) {
+            const toggleButton = document.createElement('button');
+            toggleButton.className = 'mobile-menu-toggle';
+            toggleButton.innerHTML = '<i class="fas fa-bars"></i>';
+            toggleButton.addEventListener('click', function() {
+                const menu = document.querySelector('.nav-menu');
+                menu.classList.toggle('mobile-open');
+                this.innerHTML = menu.classList.contains('mobile-open') 
+                    ? '<i class="fas fa-times"></i>' 
+                    : '<i class="fas fa-bars"></i>';
+            });
+            navbar.appendChild(toggleButton);
+        }
+        
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Navbar scroll effect
+        let lastScrollY = window.scrollY;
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-futuristic');
+            if (window.scrollY > lastScrollY && window.scrollY > 100) {
+                navbar.style.transform = 'translateY(-100%)';
+            } else {
+                navbar.style.transform = 'translateY(0)';
+            }
+            lastScrollY = window.scrollY;
+        });
+        
+        // Preload critical resources
+        const preloadLinks = [
+            '/static/js/dashboard.js',
+            '/static/css/style.css'
+        ];
+        
+        preloadLinks.forEach(href => {
+            const link = document.createElement('link');
+            link.rel = 'preload';
+            link.href = href;
+            link.as = href.endsWith('.js') ? 'script' : 'style';
+            document.head.appendChild(link);
+        });
+    });
+    
+    // Global toast notification function
+    window.showToast = function(message, type = 'info', duration = 5000) {
+        const toast = document.getElementById(type + 'Toast');
+        if (toast) {
+            toast.querySelector('.toast-body-modern').textContent = message;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, duration);
+        }
+    };
+    
+    // Global loading overlay functions
+    window.showLoading = function() {
+        document.getElementById('loadingModal').style.display = 'flex';
+    };
+    
+    window.hideLoading = function() {
+        document.getElementById('loadingModal').style.display = 'none';
+    };
+    </script>
 </body>
 </html>
