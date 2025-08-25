@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func
 from typing import List, Optional
 import json
 
@@ -193,20 +194,31 @@ async def get_search_stats(
 ):
     """Arama istatistikleri"""
     try:
+        print(f"🔍 Stats API called for user: {current_user.id} ({current_user.email})")
+        
+        # Debug: Check all documents in database
+        all_docs = db.query(Document).all()
+        print(f"📊 Total documents in database: {len(all_docs)}")
+        for doc in all_docs:
+            print(f"  - Doc {doc.id}: User {doc.user_id}, {doc.original_filename}, Processed: {doc.processed}")
+        
+        # Get user's documents
         total_docs = db.query(Document).filter(
             Document.user_id == current_user.id
         ).count()
+        print(f"👤 Documents for user {current_user.id}: {total_docs}")
         
         processed_docs = db.query(Document).filter(
             Document.user_id == current_user.id,
             Document.processed == True
         ).count()
+        print(f"✅ Processed documents for user {current_user.id}: {processed_docs}")
         
         # Dosya tiplerine göre dağılım
         type_distribution = {}
         file_types = db.query(
             Document.file_type,
-            db.func.count(Document.id).label('count')
+            func.count(Document.id).label('count')
         ).filter(
             Document.user_id == current_user.id
         ).group_by(Document.file_type).all()
@@ -214,14 +226,18 @@ async def get_search_stats(
         for file_type, count in file_types:
             type_distribution[file_type] = count
         
-        return {
+        result = {
             "total_documents": total_docs,
             "processed_documents": processed_docs,
             "processing_rate": round((processed_docs / total_docs * 100) if total_docs > 0 else 0, 1),
             "file_type_distribution": type_distribution
         }
         
+        print(f"📈 Stats result: {result}")
+        return result
+        
     except Exception as e:
+        print(f"❌ Stats API error: {e}")
         return {
             "total_documents": 0,
             "processed_documents": 0,

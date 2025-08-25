@@ -5,14 +5,17 @@
 {% block content %}
 <div id="dashboardContent">
     <!-- Page Header -->
-    <div class="page-header">
-        <div class="page-header-content">
-            <div>
-                <h1 class="page-title">Dashboard</h1>
-                <p class="page-subtitle">Döküman yönetim sisteminizin genel durumu</p>
+    <div class="page-header-futuristic">
+        <div class="page-header-content-futuristic">
+            <div class="page-title-section">
+                <h1 class="page-title-futuristic">
+                    <i class="fas fa-chart-line"></i>
+                    Dashboard
+                </h1>
+                <p class="page-subtitle-futuristic">Döküman yönetim sisteminizin genel durumu</p>
             </div>
-            <div class="page-actions">
-                <button class="btn-modern btn-primary" onclick="showDocumentUpload()">
+            <div class="page-actions-futuristic">
+                <button class="btn-futuristic btn-futuristic-primary" onclick="showDocumentUpload()">
                     <i class="fas fa-plus"></i>
                     Döküman Yükle
                 </button>
@@ -21,112 +24,118 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div class="stat-content">
-                <div class="stat-info">
-                    <h3 id="totalDocs">0</h3>
-                    <p>Toplam Döküman</p>
-                </div>
-                <div class="stat-icon">
+    <div class="stats-grid-futuristic">
+        <div class="stat-card-futuristic primary">
+            <div class="stat-card-header">
+                <div class="stat-icon-futuristic primary">
                     <i class="fas fa-file-alt"></i>
                 </div>
+                <div class="stat-glow primary"></div>
+            </div>
+            <div class="stat-content-futuristic">
+                <h3 class="stat-number" id="totalDocs">0</h3>
+                <p class="stat-label">Toplam Döküman</p>
             </div>
         </div>
         
-        <div class="stat-card success">
-            <div class="stat-content">
-                <div class="stat-info">
-                    <h3 id="processedDocs">0</h3>
-                    <p>İşlenen Döküman</p>
-                </div>
-                <div class="stat-icon success">
+        <div class="stat-card-futuristic success">
+            <div class="stat-card-header">
+                <div class="stat-icon-futuristic success">
                     <i class="fas fa-check-circle"></i>
                 </div>
+                <div class="stat-glow success"></div>
+            </div>
+            <div class="stat-content-futuristic">
+                <h3 class="stat-number" id="processedDocs">0</h3>
+                <p class="stat-label">İşlenen Döküman</p>
             </div>
         </div>
         
-        <div class="stat-card warning">
-            <div class="stat-content">
-                <div class="stat-info">
-                    <h3 id="processingDocs">0</h3>
-                    <p>İşleniyor</p>
-                </div>
-                <div class="stat-icon warning">
+        <div class="stat-card-futuristic warning">
+            <div class="stat-card-header">
+                <div class="stat-icon-futuristic warning">
                     <i class="fas fa-cog fa-spin"></i>
                 </div>
+                <div class="stat-glow warning"></div>
+            </div>
+            <div class="stat-content-futuristic">
+                <h3 class="stat-number" id="processingDocs">0</h3>
+                <p class="stat-label">İşleniyor</p>
             </div>
         </div>
         
-        <div class="stat-card info">
-            <div class="stat-content">
-                <div class="stat-info">
-                    <h3 id="processingRate">0%</h3>
-                    <p>İşlenme Oranı</p>
-                </div>
-                <div class="stat-icon info">
+        <div class="stat-card-futuristic info">
+            <div class="stat-card-header">
+                <div class="stat-icon-futuristic info">
                     <i class="fas fa-chart-pie"></i>
                 </div>
+                <div class="stat-glow info"></div>
+            </div>
+            <div class="stat-content-futuristic">
+                <h3 class="stat-number" id="processingRate">0%</h3>
+                <p class="stat-label">İşlenme Oranı</p>
             </div>
         </div>
     </div>
 
     <!-- Quick Actions -->
-    <div class="card-modern mb-6">
-        <div class="card-header-modern">
-            <h2 class="card-title">
+    <div class="section-card-futuristic">
+        <div class="section-header-futuristic">
+            <h2 class="section-title-futuristic">
                 <i class="fas fa-bolt"></i>
                 Hızlı İşlemler
             </h2>
         </div>
-        <div class="card-body-modern">
-            <div class="quick-actions-grid">
-                <button class="quick-action-card" onclick="showDocumentUpload()">
-                    <div class="quick-action-icon">
-                        <i class="fas fa-upload"></i>
-                    </div>
-                    <h3>Döküman Yükle</h3>
-                    <p>Yeni döküman ekleyin</p>
-                </button>
-                
-                <button class="quick-action-card" onclick="showChatSection()">
-                    <div class="quick-action-icon gradient-success">
-                        <i class="fas fa-robot"></i>
-                    </div>
-                    <h3>AI Chat</h3>
-                    <p>Dökümanlarınızla sohbet edin</p>
-                </button>
-                
-                <button class="quick-action-card" onclick="showSearchSection()">
-                    <div class="quick-action-icon gradient-secondary">
-                        <i class="fas fa-search"></i>
-                    </div>
-                    <h3>Akıllı Arama</h3>
-                    <p>Anlamsal arama yapın</p>
-                </button>
-                
-                <button class="quick-action-card" onclick="showDocumentsSection()">
-                    <div class="quick-action-icon" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);">
-                        <i class="fas fa-list"></i>
-                    </div>
-                    <h3>Döküman Listesi</h3>
-                    <p>Tüm dökümanlarınızı görün</p>
-                </button>
-            </div>
+        <div class="quick-actions-grid-futuristic">
+            <button class="quick-action-card-futuristic upload" onclick="showDocumentUpload()">
+                <div class="quick-action-glow upload"></div>
+                <div class="quick-action-icon-futuristic upload">
+                    <i class="fas fa-upload"></i>
+                </div>
+                <h3 class="quick-action-title">Döküman Yükle</h3>
+                <p class="quick-action-desc">Yeni döküman ekleyin</p>
+            </button>
+            
+            <button class="quick-action-card-futuristic chat" onclick="showChatSection()">
+                <div class="quick-action-glow chat"></div>
+                <div class="quick-action-icon-futuristic chat">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h3 class="quick-action-title">AI Chat</h3>
+                <p class="quick-action-desc">Dökümanlarınızla sohbet edin</p>
+            </button>
+            
+            <button class="quick-action-card-futuristic search" onclick="showSearchSection()">
+                <div class="quick-action-glow search"></div>
+                <div class="quick-action-icon-futuristic search">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="quick-action-title">Akıllı Arama</h3>
+                <p class="quick-action-desc">Anlamsal arama yapın</p>
+            </button>
+            
+            <button class="quick-action-card-futuristic documents" onclick="showDocumentsSection()">
+                <div class="quick-action-glow documents"></div>
+                <div class="quick-action-icon-futuristic documents">
+                    <i class="fas fa-list"></i>
+                </div>
+                <h3 class="quick-action-title">Döküman Listesi</h3>
+                <p class="quick-action-desc">Tüm dökümanlarınızı görün</p>
+            </button>
         </div>
     </div>
 
     <!-- Content Grid -->
-    <div class="dashboard-grid">
+    <div class="dashboard-grid-futuristic">
         <!-- Recent Documents -->
-        <div class="card-modern">
-            <div class="card-header-modern">
-                <h2 class="card-title">
+        <div class="section-card-futuristic">
+            <div class="section-header-futuristic">
+                <h2 class="section-title-futuristic">
                     <i class="fas fa-clock"></i>
                     Son Yüklenen Dökümanlar
                 </h2>
             </div>
-            <div class="card-body-modern">
+            <div class="section-content-futuristic">
                 <div id="recentDocuments">
                     <!-- Populated by JavaScript -->
                 </div>
@@ -134,16 +143,19 @@
         </div>
         
         <!-- File Type Distribution -->
-        <div class="card-modern">
-            <div class="card-header-modern">
-                <h2 class="card-title">
+        <div class="section-card-futuristic">
+            <div class="section-header-futuristic">
+                <h2 class="section-title-futuristic">
                     <i class="fas fa-chart-bar"></i>
                     Dosya Tipi Dağılımı
                 </h2>
             </div>
-            <div class="card-body-modern">
+            <div class="section-content-futuristic">
                 <div id="fileTypeChart">
-                    <!-- Populated by JavaScript -->
+                    <div class="chart-placeholder">
+                        <i class="fas fa-chart-pie"></i>
+                        <p>Veri bulunamıyor</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1904,6 +1916,415 @@
     .btn-search {
         width: 100%;
         padding: 18px 24px;
+    }
+}
+
+/* Dashboard Futuristic Design */
+#dashboardContent {
+    padding: 24px;
+    background: transparent;
+    min-height: 100vh;
+}
+
+/* Page Header */
+.page-header-futuristic {
+    margin-bottom: 32px;
+    padding: 32px;
+    background: linear-gradient(145deg, rgba(20, 20, 35, 0.95), rgba(16, 16, 30, 0.98));
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 
+        0 20px 40px rgba(0, 255, 136, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header-futuristic::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #00ff88, transparent);
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+.page-header-content-futuristic {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.page-title-futuristic {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, #ffffff, #00ff88);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-title-futuristic i {
+    color: #00ff88;
+    text-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+.page-subtitle-futuristic {
+    color: rgba(255, 255, 255, 0.8);
+    margin: 8px 0 0 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.page-actions-futuristic {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+}
+
+/* Stats Grid */
+.stats-grid-futuristic {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.stat-card-futuristic {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card-futuristic:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(0, 255, 136, 0.15);
+}
+
+.stat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.stat-icon-futuristic {
+    width: 60px;
+    height: 60px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: #000000;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+}
+
+.stat-icon-futuristic.primary {
+    background: linear-gradient(135deg, #00ff88, #00cc6a);
+}
+
+.stat-icon-futuristic.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.stat-icon-futuristic.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.stat-icon-futuristic.info {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.stat-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    opacity: 0.3;
+    z-index: 1;
+}
+
+.stat-glow.primary {
+    background: radial-gradient(circle, rgba(0, 255, 136, 0.4), transparent);
+}
+
+.stat-glow.success {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.4), transparent);
+}
+
+.stat-glow.warning {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.4), transparent);
+}
+
+.stat-glow.info {
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent);
+}
+
+.stat-content-futuristic {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, #ffffff, #00ff88);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Section Cards */
+.section-card-futuristic {
+    background: linear-gradient(145deg, rgba(20, 20, 35, 0.95), rgba(16, 16, 30, 0.98));
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 
+        0 20px 40px rgba(0, 255, 136, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 32px;
+}
+
+.section-card-futuristic::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #00ff88, transparent);
+    animation: shimmer 3s ease-in-out infinite;
+}
+
+.section-header-futuristic {
+    padding: 24px 32px 0 32px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 24px;
+}
+
+.section-title-futuristic {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 24px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.section-title-futuristic i {
+    color: #00ff88;
+    font-size: 1.25rem;
+}
+
+.section-content-futuristic {
+    padding: 0 32px 32px 32px;
+}
+
+/* Quick Actions Grid */
+.quick-actions-grid-futuristic {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    padding: 0 32px 32px 32px;
+}
+
+.quick-action-card-futuristic {
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.quick-action-card-futuristic:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 40px rgba(0, 255, 136, 0.2);
+    border-color: rgba(0, 255, 136, 0.3);
+}
+
+.quick-action-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 1;
+}
+
+.quick-action-card-futuristic:hover .quick-action-glow {
+    opacity: 0.3;
+}
+
+.quick-action-glow.upload {
+    background: radial-gradient(circle, rgba(0, 255, 136, 0.4), transparent);
+}
+
+.quick-action-glow.chat {
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.4), transparent);
+}
+
+.quick-action-glow.search {
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.4), transparent);
+}
+
+.quick-action-glow.documents {
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.4), transparent);
+}
+
+.quick-action-icon-futuristic {
+    width: 80px;
+    height: 80px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: #000000;
+    font-weight: 600;
+    margin: 0 auto 20px auto;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.quick-action-icon-futuristic.upload {
+    background: linear-gradient(135deg, #00ff88, #00cc6a);
+}
+
+.quick-action-icon-futuristic.chat {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.quick-action-icon-futuristic.search {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+}
+
+.quick-action-icon-futuristic.documents {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.quick-action-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 8px 0;
+}
+
+.quick-action-desc {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Dashboard Grid */
+.dashboard-grid-futuristic {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+/* Chart Placeholder */
+.chart-placeholder {
+    text-align: center;
+    padding: 40px;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.chart-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    color: #00ff88;
+    opacity: 0.5;
+}
+
+.chart-placeholder p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    #dashboardContent {
+        padding: 16px;
+    }
+    
+    .page-header-content-futuristic {
+        flex-direction: column;
+        gap: 16px;
+    }
+    
+    .page-title-futuristic {
+        font-size: 2rem;
+    }
+    
+    .stats-grid-futuristic {
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+    }
+    
+    .quick-actions-grid-futuristic {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .dashboard-grid-futuristic {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .section-header-futuristic,
+    .section-content-futuristic {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    .quick-actions-grid-futuristic {
+        padding: 0 20px 32px 20px;
     }
 }
 

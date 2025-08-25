@@ -7,16 +7,28 @@ let dashboardData = {
 
 // Initialize dashboard
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎯 DOMContentLoaded fired, pathname:', window.location.pathname);
+    
     if (window.location.pathname === '/dashboard') {
-        console.log('Dashboard page loaded');
-        if (!requireAuth()) return;
+        console.log('📱 Dashboard page detected');
         
-        // Ensure all elements are loaded before proceeding
-        if (document.readyState === 'complete') {
-            initializeDashboard();
-        } else {
-            window.addEventListener('load', initializeDashboard);
+        if (!requireAuth()) {
+            console.log('❌ Auth failed, redirecting...');
+            return;
         }
+        console.log('✅ Auth passed');
+        
+        // Force dashboard section to be visible
+        setTimeout(() => {
+            console.log('🔧 Ensuring dashboard section is visible...');
+            showDashboardSection();
+            
+            // Initialize dashboard with delay to ensure DOM is ready
+            setTimeout(() => {
+                console.log('🚀 Starting dashboard initialization...');
+                initializeDashboard();
+            }, 100);
+        }, 50);
     }
 });
 
@@ -206,21 +218,30 @@ async function loadDashboardData() {
         let documentsData = [];
         
         try {
-            console.log('Loading stats...');
+            console.log('🔍 Loading stats from /api/search/stats...');
             const statsResponse = await axios.get('/api/search/stats');
             statsData = statsResponse.data;
-            console.log('Stats loaded:', statsData);
+            console.log('✅ Stats loaded successfully:', statsData);
+            console.log('📊 Total documents:', statsData.total_documents);
+            console.log('✅ Processed documents:', statsData.processed_documents);
+            console.log('📈 Processing rate:', statsData.processing_rate);
+            console.log('📁 File types:', statsData.file_type_distribution);
         } catch (error) {
-            console.warn('Stats loading failed:', error);
+            console.error('❌ Stats loading failed:', error);
+            console.error('❌ Error details:', error.response?.data);
+            console.error('❌ Status code:', error.response?.status);
         }
         
         try {
-            console.log('Loading documents...');
+            console.log('📄 Loading documents from /api/documents/?limit=5...');
             const documentsResponse = await axios.get('/api/documents/?limit=5');
             documentsData = documentsResponse.data;
-            console.log('Documents loaded:', documentsData);
+            console.log('✅ Documents loaded successfully:', documentsData);
+            console.log('📝 Documents count:', documentsData.length);
         } catch (error) {
-            console.warn('Documents loading failed:', error);
+            console.error('❌ Documents loading failed:', error);
+            console.error('❌ Error details:', error.response?.data);
+            console.error('❌ Status code:', error.response?.status);
         }
         
         dashboardData.stats = statsData;
@@ -256,16 +277,59 @@ async function loadDashboardData() {
 }
 
 function updateDashboardStats() {
+    console.log('🔄 Updating dashboard stats...');
     const stats = dashboardData.stats;
+    console.log('📊 Stats data:', stats);
     
     // Update stat cards
-    document.getElementById('totalDocs').textContent = stats.total_documents || 0;
-    document.getElementById('processedDocs').textContent = stats.processed_documents || 0;
-    document.getElementById('processingDocs').textContent = 
-        (stats.total_documents || 0) - (stats.processed_documents || 0);
-    document.getElementById('processingRate').textContent = (stats.processing_rate || 0) + '%';
+    const totalDocs = stats.total_documents || 0;
+    const processedDocs = stats.processed_documents || 0;
+    const processingDocs = totalDocs - processedDocs;
+    const processingRate = (stats.processing_rate || 0) + '%';
+    
+    console.log('📈 Setting values:', {
+        totalDocs,
+        processedDocs,
+        processingDocs,
+        processingRate
+    });
+    
+    // Check if elements exist before updating
+    const totalDocsEl = document.getElementById('totalDocs');
+    const processedDocsEl = document.getElementById('processedDocs');
+    const processingDocsEl = document.getElementById('processingDocs');
+    const processingRateEl = document.getElementById('processingRate');
+    
+    if (totalDocsEl) {
+        totalDocsEl.textContent = totalDocs;
+        console.log('✅ Updated totalDocs:', totalDocs);
+    } else {
+        console.error('❌ Element totalDocs not found!');
+    }
+    
+    if (processedDocsEl) {
+        processedDocsEl.textContent = processedDocs;
+        console.log('✅ Updated processedDocs:', processedDocs);
+    } else {
+        console.error('❌ Element processedDocs not found!');
+    }
+    
+    if (processingDocsEl) {
+        processingDocsEl.textContent = processingDocs;
+        console.log('✅ Updated processingDocs:', processingDocs);
+    } else {
+        console.error('❌ Element processingDocs not found!');
+    }
+    
+    if (processingRateEl) {
+        processingRateEl.textContent = processingRate;
+        console.log('✅ Updated processingRate:', processingRate);
+    } else {
+        console.error('❌ Element processingRate not found!');
+    }
     
     // Update file type chart
+    console.log('📊 Updating file type chart...');
     updateFileTypeChart(stats.file_type_distribution || {});
 }
 
