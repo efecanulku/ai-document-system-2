@@ -641,26 +641,38 @@ function renderChatSessions() {
 
     if (chatSessions.length === 0) {
         container.innerHTML = `
-            <div class="p-3 text-center">
-                <p class="text-muted mb-0">Henüz sohbet oturumu yok</p>
+            <div style="padding: 24px; text-align: center;">
+                <div style="color: rgba(255, 255, 255, 0.6); font-size: 14px;">
+                    <i class="fas fa-comment-dots" style="font-size: 32px; margin-bottom: 12px; color: #00ff88; opacity: 0.5;"></i>
+                    <p style="margin: 0;">Henüz sohbet oturumu yok</p>
+                    <p style="margin: 4px 0 0 0; font-size: 12px;">Yeni bir sohbet başlatın</p>
+                </div>
             </div>
         `;
         return;
     }
 
     const sessionsHtml = chatSessions.map(session => `
-        <a href="#" class="list-group-item list-group-item-action ${currentChatSession?.id === session.id ? 'active' : ''}"
-           onclick="selectChatSession(${session.id})">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="text-truncate">
-                    <h6 class="mb-1">${session.session_name}</h6>
-                    <small class="text-muted">${formatDate(session.updated_at || session.created_at)}</small>
+        <div class="chat-session-card ${currentChatSession?.id === session.id ? 'active' : ''}"
+             onclick="selectChatSession(${session.id})">
+            <div class="chat-session-header">
+                <div class="chat-session-avatar">
+                    <i class="fas fa-comment-dots"></i>
                 </div>
-                <button class="btn btn-sm btn-outline-danger" onclick="deleteChatSession(${session.id}, event)">
+                <div class="chat-session-info">
+                    <div class="chat-session-title">${session.session_name}</div>
+                    <div class="chat-session-time">${formatDate(session.updated_at || session.created_at)}</div>
+                </div>
+                <button class="chat-session-delete"
+                        onclick="deleteChatSession(${session.id}, event)"
+                        title="Sohbeti Sil">
                     <i class="fas fa-trash"></i>
                 </button>
             </div>
-        </a>
+            <div class="chat-session-preview">
+                Son mesaj özeti...
+            </div>
+        </div>
     `).join('');
 
     container.innerHTML = sessionsHtml;
@@ -709,21 +721,21 @@ function renderChatMessages(messages) {
 
     if (messages.length === 0) {
         container.innerHTML = `
-            <div class="text-muted text-center p-4">
-                Merhaba! Size nasıl yardımcı olabilirim? Dökümanlarınız hakkında soru sorabilirsiniz.
+            <div class="welcome-message">
+                <div class="welcome-content">
+                    <i class="fas fa-robot"></i>
+                    <h4>Merhaba! Size nasıl yardımcı olabilirim?</h4>
+                    <p>Dökümanlarınız hakkında soru sorabilir, analiz isteyebilir veya bilgi arayabilirsiniz.</p>
+                </div>
             </div>
         `;
         return;
     }
 
     const messagesHtml = messages.map(message => `
-        <div class="chat-message ${message.message_type} slide-in">
-            <div class="message-content">
-                ${message.content}
-            </div>
-            <div class="message-time">
-                ${formatDate(message.timestamp)}
-            </div>
+        <div class="message-bubble ${message.message_type}">
+            <div class="message-content">${message.content}</div>
+            <div class="message-time">${formatDate(message.timestamp)}</div>
         </div>
     `).join('');
 
@@ -740,9 +752,15 @@ async function handleChatMessage(e) {
     if (!message) return;
 
     try {
+        // Clear welcome message if present
+        const welcomeMsg = document.querySelector('.welcome-message');
+        if (welcomeMsg) {
+            welcomeMsg.remove();
+        }
+        
         // Add user message to UI immediately
         const userMessageHtml = `
-            <div class="chat-message user slide-in">
+            <div class="message-bubble user">
                 <div class="message-content">${message}</div>
                 <div class="message-time">${formatDate(new Date().toISOString())}</div>
             </div>
@@ -750,6 +768,24 @@ async function handleChatMessage(e) {
         document.getElementById('chatMessages').insertAdjacentHTML('beforeend', userMessageHtml);
         
         input.value = '';
+        document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+        
+        // Show typing indicator
+        const typingHtml = `
+            <div class="message-bubble assistant typing-indicator" id="typingIndicator">
+                <div class="message-content">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div style="display: flex; gap: 4px;">
+                            <div style="width: 6px; height: 6px; background: #00ff88; border-radius: 50%; animation: typing 1.4s ease-in-out infinite;"></div>
+                            <div style="width: 6px; height: 6px; background: #00ff88; border-radius: 50%; animation: typing 1.4s ease-in-out infinite 0.2s;"></div>
+                            <div style="width: 6px; height: 6px; background: #00ff88; border-radius: 50%; animation: typing 1.4s ease-in-out infinite 0.4s;"></div>
+                        </div>
+                        <span style="color: rgba(255, 255, 255, 0.7); font-size: 13px;">AI yazıyor...</span>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.getElementById('chatMessages').insertAdjacentHTML('beforeend', typingHtml);
         document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
         
         // Send message to API
@@ -760,6 +796,12 @@ async function handleChatMessage(e) {
         
         const chatResponse = response.data;
         
+        // Remove typing indicator
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+        
         // Update current session if new one was created
         if (!currentChatSession || currentChatSession.id !== chatResponse.session_id) {
             currentChatSession = { id: chatResponse.session_id, session_name: 'Yeni Sohbet' };
@@ -768,7 +810,7 @@ async function handleChatMessage(e) {
         
         // Add AI response to UI
         const aiMessageHtml = `
-            <div class="chat-message assistant slide-in">
+            <div class="message-bubble assistant">
                 <div class="message-content">${chatResponse.response}</div>
                 <div class="message-time">${formatDate(new Date().toISOString())}</div>
             </div>
