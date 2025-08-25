@@ -5,6 +5,53 @@ let currentChatSession = null;
 let documents = [];
 let chatSessions = [];
 
+// Global initialization for all pages
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🌐 Main.js loaded on page:', window.location.pathname);
+    console.log('📍 Current URL:', window.location.href);
+    console.log('📍 Current pathname:', window.location.pathname);
+    console.log('🔑 Token in localStorage:', !!localStorage.getItem('token'));
+    
+    // Debug: Check if there's a redirect happening
+    console.log('🔍 Checking for redirects...');
+    console.log('🔍 localStorage keys:', Object.keys(localStorage));
+    console.log('🔍 localStorage showSection:', localStorage.getItem('showSection'));
+    console.log('🔍 localStorage lastPage:', localStorage.getItem('lastPage'));
+    
+    // Check if we're on a protected page
+    const protectedPages = ['/dashboard', '/documents', '/chat', '/search'];
+    const currentPath = window.location.pathname;
+    
+    if (protectedPages.includes(currentPath)) {
+        console.log('🛡️ Protected page detected:', currentPath);
+        
+        // Check authentication manually (since requireAuthNoRedirect might not be loaded yet)
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.log('❌ No token found, staying on current page');
+            return;
+        }
+        
+        console.log('✅ Token found, authentication passed');
+        
+        // Initialize page-specific functionality
+        if (currentPath === '/dashboard') {
+            console.log('📱 Dashboard page - main.js initialization complete');
+        } else if (currentPath === '/documents') {
+            console.log('📄 Documents page - loading documents...');
+            loadDocuments();
+        } else if (currentPath === '/chat') {
+            console.log('💬 Chat page - loading chat sessions...');
+            // loadChatSessions is in dashboard.js, will be handled there
+        } else if (currentPath === '/search') {
+            console.log('🔍 Search page - loading search filters...');
+            // loadSearchFilters is in dashboard.js, will be handled there
+        }
+    } else {
+        console.log('🌐 Public page detected:', currentPath);
+    }
+});
+
 // Simple loading overlay management
 function showLoading() {
     const loadingElement = document.getElementById('loadingModal');
@@ -299,7 +346,23 @@ function showDashboard() {
 }
 
 function showDocuments() {
-    if (!requireAuth()) return;
+    console.log('📄 showDocuments() called');
+    console.log('📍 Current pathname:', window.location.pathname);
+    console.log('📍 Current URL:', window.location.href);
+    console.log('🔍 localStorage showSection:', localStorage.getItem('showSection'));
+    
+    // Check authentication manually
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.log('❌ No token found in showDocuments, returning');
+        return;
+    }
+    
+    console.log('✅ Token found, switching to documents section');
+    
+    // Store current page in localStorage
+    localStorage.setItem('lastPage', '/documents');
+    console.log('💾 Stored lastPage in localStorage:', '/documents');
     
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('documentsSection').style.display = 'block';
@@ -310,8 +373,18 @@ function showDocuments() {
 }
 
 function showChat() {
-    if (!requireAuth()) return;
+    console.log('💬 showChat() called');
+    console.log('📍 Current pathname:', window.location.pathname);
+    console.log('📍 Current URL:', window.location.href);
     
+    // Check authentication manually
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.log('❌ No token found in showChat, returning');
+        return;
+    }
+    
+    console.log('✅ Token found, switching to chat section');
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('documentsSection').style.display = 'none';
     document.getElementById('chatSection').style.display = 'block';
@@ -321,8 +394,18 @@ function showChat() {
 }
 
 function showSearch() {
-    if (!requireAuth()) return;
+    console.log('🔍 showSearch() called');
+    console.log('📍 Current pathname:', window.location.pathname);
+    console.log('📍 Current URL:', window.location.href);
     
+    // Check authentication manually
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.log('❌ No token found in showSearch, returning');
+        return;
+    }
+    
+    console.log('✅ Token found, switching to search section');
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('documentsSection').style.display = 'none';
     document.getElementById('chatSection').style.display = 'none';

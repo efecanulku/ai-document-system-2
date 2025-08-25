@@ -51,6 +51,21 @@ async def dashboard(request: Request):
     """Dashboard sayfası"""
     return templates.TemplateResponse("dashboard.html", {"request": request})
 
+@app.get("/documents")
+async def documents_page(request: Request):
+    """Documents sayfası"""
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
+@app.get("/chat")
+async def chat_page(request: Request):
+    """AI Chat sayfası"""
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
+@app.get("/search")
+async def search_page(request: Request):
+    """Smart Search sayfası"""
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
 @app.get("/login")
 async def login_page(request: Request):
     """Giriş sayfası"""

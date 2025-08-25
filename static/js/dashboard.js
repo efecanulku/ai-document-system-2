@@ -5,18 +5,25 @@ let dashboardData = {
     recentDocuments: []
 };
 
-// Initialize dashboard
+// Initialize dashboard and other protected pages
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🎯 DOMContentLoaded fired, pathname:', window.location.pathname);
+    console.log('🎯 Dashboard.js DOMContentLoaded fired');
+    console.log('📍 Current pathname:', window.location.pathname);
+    console.log('📍 Current URL:', window.location.href);
+    console.log('🔑 Token in localStorage:', !!localStorage.getItem('token'));
     
-    if (window.location.pathname === '/dashboard') {
+    const currentPath = window.location.pathname;
+    
+    if (currentPath === '/dashboard') {
         console.log('📱 Dashboard page detected');
         
-        if (!requireAuth()) {
-            console.log('❌ Auth failed, redirecting...');
+        // Check authentication manually
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.log('❌ No token found, staying on current page...');
             return;
         }
-        console.log('✅ Auth passed');
+        console.log('✅ Token found, authentication passed');
         
         // Force dashboard section to be visible
         setTimeout(() => {
@@ -29,6 +36,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 initializeDashboard();
             }, 100);
         }, 50);
+    } else if (currentPath === '/documents' || currentPath === '/chat' || currentPath === '/search') {
+        console.log('📱 Protected page detected:', currentPath);
+        
+        // Check authentication manually
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.log('❌ No token found on protected page, staying on current page...');
+            return;
+        }
+        console.log('✅ Token found, authentication passed on protected page');
+        
+        // Initialize page-specific functionality
+        if (currentPath === '/documents') {
+            console.log('📄 Initializing documents page...');
+            showDocumentsSection();
+            loadDocuments();
+        } else if (currentPath === '/chat') {
+            console.log('💬 Initializing chat page...');
+            showChatSection();
+            loadChatSessions();
+        } else if (currentPath === '/search') {
+            console.log('🔍 Initializing search page...');
+            showSearchSection();
+            loadSearchFilters();
+        }
+    } else {
+        console.log('📱 Public page or unknown page:', currentPath);
     }
 });
 
@@ -82,7 +116,7 @@ function showDashboardSection() {
 }
 
 function showDocumentsSection() {
-    if (!requireAuth()) return;
+    if (!requireAuthNoRedirect()) return;
     
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('documentsSection').style.display = 'block';
@@ -93,7 +127,7 @@ function showDocumentsSection() {
 }
 
 function showChatSection() {
-    if (!requireAuth()) return;
+    if (!requireAuthNoRedirect()) return;
     
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('documentsSection').style.display = 'none';
@@ -104,7 +138,7 @@ function showChatSection() {
 }
 
 function showSearchSection() {
-    if (!requireAuth()) return;
+    if (!requireAuthNoRedirect()) return;
     
     document.getElementById('dashboardContent').style.display = 'none';
     document.getElementById('documentsSection').style.display = 'none';

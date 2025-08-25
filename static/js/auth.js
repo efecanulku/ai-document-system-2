@@ -69,32 +69,41 @@ class AuthManager {
 
         if (this.isAuthenticated()) {
             authNav.innerHTML = `
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="fas fa-user me-1"></i>
-                        ${this.user ? this.user.username : 'Kullanıcı'}
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="authManager.showProfile()">
-                            <i class="fas fa-user-edit me-2"></i>Profil
-                        </a></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="#" onclick="authManager.logout()">
-                            <i class="fas fa-sign-out-alt me-2"></i>Çıkış Yap
-                        </a></li>
-                    </ul>
+                <li class="nav-item user-menu">
+                    <div class="user-menu-container">
+                        <button class="user-menu-toggle" onclick="toggleUserMenu()">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="user-name">${this.user ? this.user.username : 'Kullanıcı'}</span>
+                            <i class="fas fa-chevron-down user-chevron"></i>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="dropdown-item" onclick="authManager.showProfile()">
+                                <i class="fas fa-user-edit"></i>
+                                <span>Profil</span>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="dropdown-item" onclick="authManager.logout()">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Çıkış Yap</span>
+                            </div>
+                        </div>
+                    </div>
                 </li>
             `;
         } else {
             authNav.innerHTML = `
                 <li class="nav-item">
                     <a class="nav-link" href="/login">
-                        <i class="fas fa-sign-in-alt me-1"></i>Giriş
+                        <i class="fas fa-sign-in-alt"></i>
+                        <span>Giriş</span>
                     </a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/register">
-                        <i class="fas fa-user-plus me-1"></i>Kayıt
+                        <i class="fas fa-user-plus"></i>
+                        <span>Kayıt</span>
                     </a>
                 </li>
             `;
@@ -103,7 +112,7 @@ class AuthManager {
 
     showProfile() {
         // TODO: Implement profile modal
-        showInfo('Profil özelliği yakında eklenecek');
+        alert('Profil özelliği yakında eklenecek');
     }
 }
 
@@ -112,11 +121,62 @@ const authManager = new AuthManager();
 
 // Check authentication on protected pages
 function requireAuth() {
+    console.log('🔐 requireAuth() called');
+    console.log('📍 Current URL:', window.location.href);
+    console.log('📍 Current pathname:', window.location.pathname);
+    console.log('🔑 Token exists:', !!authManager.token);
+    console.log('👤 User authenticated:', authManager.isAuthenticated());
+    
     if (!authManager.isAuthenticated()) {
-        console.log('Not authenticated, redirecting to login');
+        console.log('❌ Not authenticated, redirecting to login');
+        console.log('🔄 Redirecting from:', window.location.href, 'to /login');
         window.location.href = '/login';
         return false;
     }
-    console.log('User authenticated, token exists');
+    console.log('✅ User authenticated, token exists');
     return true;
 }
+
+// Check authentication without redirect (for dashboard.js)
+function requireAuthNoRedirect() {
+    console.log('🔐 requireAuthNoRedirect() called');
+    console.log('📍 Current URL:', window.location.href);
+    console.log('📍 Current pathname:', window.location.pathname);
+    console.log('🔑 Token exists:', !!authManager.token);
+    console.log('👤 User authenticated:', authManager.isAuthenticated());
+    
+    if (!authManager.isAuthenticated()) {
+        console.log('❌ Not authenticated, but NOT redirecting (staying on current page)');
+        return false;
+    }
+    console.log('✅ User authenticated, token exists');
+    return true;
+}
+
+// Toggle user menu dropdown
+function toggleUserMenu() {
+    const dropdown = document.getElementById('userDropdown');
+    const chevron = document.querySelector('.user-chevron');
+    
+    if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+        chevron.style.transform = 'rotate(0deg)';
+    } else {
+        dropdown.classList.add('show');
+        chevron.style.transform = 'rotate(180deg)';
+    }
+}
+
+// Close user menu when clicking outside
+document.addEventListener('click', function(event) {
+    const userMenu = document.querySelector('.user-menu-container');
+    const dropdown = document.getElementById('userDropdown');
+    
+    if (userMenu && !userMenu.contains(event.target)) {
+        dropdown.classList.remove('show');
+        const chevron = document.querySelector('.user-chevron');
+        if (chevron) {
+            chevron.style.transform = 'rotate(0deg)';
+        }
+    }
+});
