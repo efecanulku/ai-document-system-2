@@ -52,6 +52,7 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('📄 Initializing documents page...');
             showDocumentsSection();
             loadDocuments();
+            setupEventListeners(); // Direct call, no setTimeout
         } else if (currentPath === '/chat') {
             console.log('💬 Initializing chat page...');
             showChatSection();
@@ -108,6 +109,13 @@ function initializeDashboard() {
 }
 
 function showDashboardSection() {
+    // Auth guard - check if user is authenticated
+    if (!requireAuthNoRedirect()) {
+        console.log('❌ Not authenticated, cannot show dashboard');
+        return;
+    }
+    
+    console.log('✅ Showing dashboard section');
     document.getElementById('dashboardContent').style.display = 'block';
     document.getElementById('documentsSection').style.display = 'none';
     document.getElementById('chatSection').style.display = 'none';
@@ -135,6 +143,20 @@ function showChatSection() {
     document.getElementById('searchSection').style.display = 'none';
     
     loadChatSessions();
+    
+    // Setup chat form event listeners
+    console.log('💬 Setting up chat form event listeners...');
+    const chatForm = document.getElementById('chatForm');
+    if (chatForm) {
+        // Remove existing event listeners by cloning
+        const newChatForm = chatForm.cloneNode(true);
+        chatForm.parentNode.replaceChild(newChatForm, chatForm);
+        
+        newChatForm.addEventListener('submit', handleChatMessage);
+        console.log('✅ Chat form submit event listener added');
+    } else {
+        console.error('❌ Chat form not found!');
+    }
 }
 
 function showSearchSection() {
@@ -1061,3 +1083,17 @@ function renderSearchResults(results) {
 
     container.innerHTML = resultsHtml;
 }
+
+// Global event listener setup - simplified
+console.log('🌐 Dashboard.js loaded');
+
+// Single DOMContentLoaded listener
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎯 DOMContentLoaded in dashboard.js');
+    
+    // Check if we're on documents page and setup event listeners
+    if (window.location.pathname === '/documents') {
+        console.log('📄 Documents page detected, setting up event listeners...');
+        setupEventListeners();
+    }
+});

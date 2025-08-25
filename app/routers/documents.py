@@ -22,11 +22,23 @@ async def upload_document(
     db: Session = Depends(get_db)
 ):
     """Döküman yükle"""
+    print(f"🚀 UPLOAD ENDPOINT CALLED!")
+    print(f"👤 User: {current_user.id} ({current_user.email})")
+    print(f"📄 File: {file.filename}")
+    print(f"📏 File size: {file.size}")
+    print(f"🔧 File type: {file.content_type}")
+    
     try:
+        print(f"💾 Saving file...")
         # Dosyayı kaydet
         file_path, unique_filename = await save_upload_file(file, current_user.id)
-        file_extension = get_file_extension(file.filename)
+        print(f"✅ File saved to: {file_path}")
+        print(f"✅ Unique filename: {unique_filename}")
         
+        file_extension = get_file_extension(file.filename)
+        print(f"📎 File extension: {file_extension}")
+        
+        print(f"💾 Saving to database...")
         # Veritabanına kaydet
         document = Document(
             filename=unique_filename,
@@ -40,13 +52,21 @@ async def upload_document(
         db.add(document)
         db.commit()
         db.refresh(document)
+        print(f"✅ Document saved to DB with ID: {document.id}")
         
+        print(f"🤖 Starting AI processing...")
         # Background task olarak AI işleme başlat
         background_tasks.add_task(process_document_background, document.id, db)
+        print(f"✅ Background task added")
         
+        print(f"🎉 Upload completed successfully!")
         return document
         
     except Exception as e:
+        print(f"❌ Upload error: {e}")
+        print(f"❌ Error type: {type(e)}")
+        import traceback
+        print(f"❌ Traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
 async def process_document_background(document_id: int, db: Session):

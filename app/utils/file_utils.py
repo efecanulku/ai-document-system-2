@@ -73,27 +73,46 @@ def generate_unique_filename(original_filename: str) -> str:
 
 async def save_upload_file(upload_file: UploadFile, user_id: int) -> tuple[str, str]:
     """Yüklenen dosyayı kaydet"""
+    print(f"💾 save_upload_file called for user {user_id}")
+    print(f"📄 Original filename: {upload_file.filename}")
+    
     # Dosya boyutunu kontrol et
+    print(f"📏 Reading file contents...")
     contents = await upload_file.read()
+    print(f"✅ File contents read, size: {len(contents)} bytes")
+    
     if len(contents) > MAX_FILE_SIZE:
+        print(f"❌ File too large: {len(contents)} > {MAX_FILE_SIZE}")
         raise HTTPException(status_code=413, detail="File too large")
     
     # Dosya tipini kontrol et
+    print(f"🔍 Checking file type...")
     if not is_allowed_file(contents, upload_file.filename):
+        print(f"❌ File type not allowed: {upload_file.filename}")
         raise HTTPException(status_code=400, detail="File type not allowed")
+    print(f"✅ File type allowed")
     
     # Kullanıcı klasörünü oluştur
+    print(f"📁 Creating user directory...")
     user_dir = Path(UPLOAD_DIR) / str(user_id)
+    print(f"📍 User dir path: {user_dir}")
     user_dir.mkdir(parents=True, exist_ok=True)
+    print(f"✅ User directory created/verified")
     
     # Benzersiz dosya adı oluştur
+    print(f"🆔 Generating unique filename...")
     unique_filename = generate_unique_filename(upload_file.filename)
     file_path = user_dir / unique_filename
+    print(f"✅ Unique filename: {unique_filename}")
+    print(f"📍 Full file path: {file_path}")
     
     # Dosyayı kaydet
+    print(f"💾 Writing file to disk...")
     async with aiofiles.open(file_path, 'wb') as f:
         await f.write(contents)
+    print(f"✅ File written to disk successfully")
     
+    print(f"🎉 save_upload_file completed successfully!")
     return str(file_path), unique_filename
 
 def delete_file(file_path: str) -> bool:

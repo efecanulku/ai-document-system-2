@@ -154,9 +154,20 @@ function requireAuthNoRedirect() {
 }
 
 // Toggle user menu dropdown
-function toggleUserMenu() {
+function toggleUserMenu(e) {
+    // Stop event propagation to prevent conflicts
+    if (e) {
+        e.stopPropagation();
+    }
+    
     const dropdown = document.getElementById('userDropdown');
     const chevron = document.querySelector('.user-chevron');
+    
+    // Null guard checks
+    if (!dropdown || !chevron) {
+        console.warn('User menu elements not found');
+        return;
+    }
     
     if (dropdown.classList.contains('show')) {
         dropdown.classList.remove('show');
@@ -172,7 +183,12 @@ document.addEventListener('click', function(event) {
     const userMenu = document.querySelector('.user-menu-container');
     const dropdown = document.getElementById('userDropdown');
     
-    if (userMenu && !userMenu.contains(event.target)) {
+    // Null guard checks
+    if (!userMenu || !dropdown) {
+        return;
+    }
+    
+    if (!userMenu.contains(event.target)) {
         dropdown.classList.remove('show');
         const chevron = document.querySelector('.user-chevron');
         if (chevron) {
