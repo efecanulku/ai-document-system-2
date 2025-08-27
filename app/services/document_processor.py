@@ -102,7 +102,10 @@ class DocumentProcessor:
             pdf_document.close()
         except Exception as e:
             print(f"PDF extraction error: {e}")
-        return text.strip()
+        
+        # Metni temizle ve normalize et
+        cleaned_text = self._clean_and_normalize_text(text)
+        return cleaned_text
     
     async def _extract_docx_text(self, file_path: str) -> str:
         """DOCX dosyasından metin çıkar"""
@@ -110,7 +113,10 @@ class DocumentProcessor:
         text = ""
         for paragraph in doc.paragraphs:
             text += paragraph.text + "\n"
-        return text.strip()
+        
+        # Metni temizle ve normalize et
+        cleaned_text = self._clean_and_normalize_text(text)
+        return cleaned_text
     
     async def _extract_excel_text(self, file_path: str) -> str:
         """Excel dosyasından metin çıkar"""
@@ -168,6 +174,39 @@ class DocumentProcessor:
             
             # Batch'i commit et
             db.commit()
+    
+    def _clean_and_normalize_text(self, text: str) -> str:
+        """Metni temizle ve normalize et - PDF'den gelen parçalı metni düzelt"""
+        if not text:
+            return ""
+        
+        # Gereksiz boşlukları ve satır sonlarını temizle
+        lines = text.split('\n')
+        cleaned_lines = []
+        
+        for line in lines:
+            line = line.strip()
+            if line:  # Boş satırları atla
+                # Satır sonundaki tire işaretlerini kaldır (kelime bölünmesi)
+                if line.endswith('-') and len(line) > 1:
+                    line = line[:-1]
+                cleaned_lines.append(line)
+        
+        # Satırları birleştir ve normal cümle yapısına getir
+        normalized_text = ' '.join(cleaned_lines)
+        
+        # Çoklu boşlukları tek boşluk yap
+        import re
+        normalized_text = re.sub(r'\s+', ' ', normalized_text)
+        
+        # Noktalama işaretlerinden sonra tek boşluk bırak
+        normalized_text = re.sub(r'([.!?])\s*', r'\1 ', normalized_text)
+        
+        # Paragraf yapısını koru (çift satır sonu)
+        normalized_text = re.sub(r'\n\s*\n', '\n\n', normalized_text)
+        
+        print(f"🧹 Text cleaned: {len(text)} → {len(normalized_text)} characters")
+        return normalized_text.strip()
     
     def _split_text_into_chunks(self, text: str, chunk_size: int = 1000, overlap: int = 200) -> list:
         """Metni overlapping parçalara böl"""

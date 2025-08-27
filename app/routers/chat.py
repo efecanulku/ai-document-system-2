@@ -66,7 +66,14 @@ async def get_relevant_chunks_for_chat(query: str, user_id: int, db: Session):
                 print(f"❌ Error processing chunk: {e}")
                 continue
         
-        print(f"✅ Found {len(results)} chunks above threshold 0.28")
+        print(f"✅ Found {len(results)} chunks above threshold 0.15")
+        
+        # Eğer embedding ile yeterli sonuç bulunamadıysa, keyword search yap
+        if len(results) < 5:
+            print("🔍 Embedding results insufficient, trying keyword search...")
+            keyword_results = self._keyword_search_in_chunks(query, chunks)
+            results.extend(keyword_results)
+            print(f"🔍 Keyword search added {len(keyword_results)} results")
         
         # En iyi chunk'ları döndür ve komşu chunk'ları ekle
         results.sort(key=lambda x: x['score'], reverse=True)
@@ -119,6 +126,38 @@ async def get_relevant_chunks_for_chat(query: str, user_id: int, db: Session):
     except Exception as e:
         print(f"Chat chunk search error: {e}")
         return []
+    
+    def _keyword_search_in_chunks(self, query: str, chunks: List[DocumentChunk]) -> List[dict]:
+        """Keyword tabanlı chunk arama (fallback)"""
+        try:
+            query_lower = query.lower()
+            keyword_results = []
+            
+            for chunk in chunks:
+                chunk_text_lower = chunk.chunk_text.lower()
+                
+                # Query'deki kelimeleri chunk'ta ara
+                query_words = query_lower.split()
+                match_score = 0
+                
+                for word in query_words:
+                    if word in chunk_text_lower:
+                        match_score += 1
+                
+                # Eğer en az 2 kelime eşleşiyorsa ekle
+                if match_score >= 2:
+                    keyword_results.append({
+                        'document_id': chunk.document_id,
+                        'chunk_text': chunk.chunk_text,
+                        'chunk_index': chunk.chunk_index,
+                        'score': 0.5 + (match_score * 0.1)  # Keyword match score
+                    })
+            
+            return keyword_results[:20]  # En fazla 20 keyword result
+            
+        except Exception as e:
+            print(f"Keyword search error: {e}")
+            return []
 
 @router.post("/sessions", response_model=ChatSessionSchema)
 async def create_chat_session(
