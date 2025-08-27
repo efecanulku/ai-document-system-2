@@ -168,6 +168,20 @@ function showSearchSection() {
     document.getElementById('searchSection').style.display = 'block';
     
     loadSearchFilters();
+    
+    // Setup search form event listeners
+    console.log('🔍 Setting up search form event listeners...');
+    const searchForm = document.getElementById('searchForm');
+    if (searchForm) {
+        // Remove existing event listeners by cloning
+        const newSearchForm = searchForm.cloneNode(true);
+        searchForm.parentNode.replaceChild(newSearchForm, searchForm);
+        
+        newSearchForm.addEventListener('submit', handleSearch);
+        console.log('✅ Search form submit event listener added');
+    } else {
+        console.error('❌ Search form not found!');
+    }
 }
 
 function setupEventListeners() {
@@ -1063,12 +1077,18 @@ function renderSearchResults(results) {
                                     ${formatFileSize(doc.file_size)} • ${formatDate(doc.upload_date)}
                                 </p>
 
-                                <div class="d-flex gap-2">
-                                    <button class="btn btn-sm btn-primary" onclick="viewDocument(${doc.id})">
-                                        <i class="fas fa-eye me-1"></i>Görüntüle
+                                <div class="search-result-actions">
+                                    <button class="btn-futuristic btn-futuristic-primary btn-sm" onclick="viewDocument(${doc.id})">
+                                        <span class="btn-icon">
+                                            <i class="fas fa-eye"></i>
+                                        </span>
+                                        <span class="btn-text">Görüntüle</span>
                                     </button>
-                                    <button class="btn btn-sm btn-outline-info" onclick="viewDocumentContent(${doc.id})">
-                                        <i class="fas fa-file-alt me-1"></i>İçerik
+                                    <button class="btn-futuristic btn-futuristic-secondary btn-sm" onclick="viewDocumentContent(${doc.id})">
+                                        <span class="btn-icon">
+                                            <i class="fas fa-file-alt"></i>
+                                        </span>
+                                        <span class="btn-text">İçerik</span>
                                     </button>
                                 </div>
                             </div>

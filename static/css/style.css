@@ -1047,3 +1047,106 @@ body {
 .toast-modern.toast-error .toast-header-modern i {
     color: #ef4444;
 }
+
+/* ========== FUTURISTIC SEARCH RESULT BUTTONS ========== */
+
+/* Search Result Actions */
+.search-result-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.search-result-actions .btn-futuristic {
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 500;
+}
+
+.search-result-actions .btn-futuristic::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.search-result-actions .btn-futuristic:hover::before {
+    left: 100%;
+}
+
+.search-result-actions .btn-futuristic-primary {
+    background: linear-gradient(135deg, #00ff88, #00cc6a);
+    color: #000;
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+}
+
+.search-result-actions .btn-futuristic-primary:hover {
+    background: linear-gradient(135deg, #00cc6a, #00ff88);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+}
+
+.search-result-actions .btn-futuristic-secondary {
+    background: rgba(0, 255, 136, 0.1);
+    color: #00ff88;
+    border-color: rgba(0, 255, 136, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.1);
+}
+
+.search-result-actions .btn-futuristic-secondary:hover {
+    background: rgba(0, 255, 136, 0.2);
+    border-color: rgba(0, 255, 136, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 255, 136, 0.2);
+}
+
+.search-result-actions .btn-icon {
+    margin-right: 6px;
+    font-size: 12px;
+}
+
+.search-result-actions .btn-text {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+/* Search Result Item Styling */
+.search-result-item {
+    background: var(--bg-glass);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+    margin-bottom: var(--space-3);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+}
+
+.search-result-item:hover {
+    border-color: rgba(0, 255, 136, 0.4);
+    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.15);
+    transform: translateY(-2px);
+}
+
+.search-result-item h6 {
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: var(--space-2);
+}
+
+.search-result-item p {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: var(--space-3);
+}
