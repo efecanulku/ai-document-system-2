@@ -26,11 +26,11 @@ async def search_in_chunks(query: str, user_id: int, db: Session):
         )
         query_embedding = query_response['embedding']
         
-        # Kullanıcının tüm chunk'larını al
+        # Kullanıcının tüm chunk'larını al - limit kaldırıldı
         chunks = db.query(DocumentChunk).join(Document).filter(
             Document.user_id == user_id,
             DocumentChunk.embeddings.isnot(None)
-        ).limit(200).all()  # En fazla 200 chunk kontrol et
+        ).order_by(DocumentChunk.document_id, DocumentChunk.chunk_index).all()  # Tüm chunk'ları sıralı al
         
         # Cosine similarity hesapla
         import numpy as np

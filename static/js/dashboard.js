@@ -1062,9 +1062,7 @@ function renderSearchResults(results) {
                                 <p class="text-muted mb-2">
                                     ${formatFileSize(doc.file_size)} • ${formatDate(doc.upload_date)}
                                 </p>
-                                ${doc.summary ? `
-                                    <p class="text-truncate-3 mb-2">${doc.summary}</p>
-                                ` : ''}
+
                                 <div class="d-flex gap-2">
                                     <button class="btn btn-sm btn-primary" onclick="viewDocument(${doc.id})">
                                         <i class="fas fa-eye me-1"></i>Görüntüle

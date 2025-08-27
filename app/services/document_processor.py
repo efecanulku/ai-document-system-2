@@ -145,7 +145,7 @@ class DocumentProcessor:
     
     async def create_document_chunks(self, document: Document, content_text: str, db: Session):
         """Dökümanı parçalara böl ve kaydet - Optimize edilmiş"""
-        chunks = self._split_text_into_chunks(content_text, chunk_size=500, overlap=100)
+        chunks = self._split_text_into_chunks(content_text, chunk_size=1200, overlap=250)
         
         # Batch processing için chunks'ları grupla
         batch_size = 5

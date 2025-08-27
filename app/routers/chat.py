@@ -20,6 +20,8 @@ gemini_service = GeminiService()
 async def get_relevant_chunks_for_chat(query: str, user_id: int, db: Session):
     """Chat için en alakalı chunk'ları bul"""
     try:
+        print(f"🔍 Chat search query: '{query}' for user {user_id}")
+        
         # Query embedding'i oluştur
         import google.generativeai as genai
         import numpy as np
@@ -38,6 +40,8 @@ async def get_relevant_chunks_for_chat(query: str, user_id: int, db: Session):
             DocumentChunk.embeddings.isnot(None)
         ).all()
         
+        print(f"📊 Found {len(chunks)} chunks for user {user_id}")
+        
         # Cosine similarity hesapla
         results = []
         for chunk in chunks:
@@ -47,18 +51,70 @@ async def get_relevant_chunks_for_chat(query: str, user_id: int, db: Session):
                     np.linalg.norm(query_embedding) * np.linalg.norm(chunk_embedding)
                 )
                 
-                if similarity > 0.4:  # Chat için daha yüksek threshold
+                # Debug: Tüm chunk'ları logla
+                if "sürdürülebilirlik" in chunk.chunk_text.lower() or "endeks" in chunk.chunk_text.lower():
+                    print(f"🎯 Found relevant chunk: {chunk.chunk_text[:100]}... (similarity: {similarity:.3f})")
+                
+                if similarity > 0.15:  # Çok düşük threshold - tüm chunk'ları bul
                     results.append({
                         'document_id': chunk.document_id,
                         'chunk_text': chunk.chunk_text,
+                        'chunk_index': chunk.chunk_index,
                         'score': float(similarity)
                     })
-            except:
+            except Exception as e:
+                print(f"❌ Error processing chunk: {e}")
                 continue
         
-        # En iyi chunk'ları döndür
+        print(f"✅ Found {len(results)} chunks above threshold 0.28")
+        
+        # En iyi chunk'ları döndür ve komşu chunk'ları ekle
         results.sort(key=lambda x: x['score'], reverse=True)
-        return results[:10]  # Chat için en iyi 10 chunk
+        top_results = results[:50]  # Top 50 sonucu al
+        
+        # Komşu chunk'ları bul ve ekle
+        enhanced_results = []
+        for result in top_results[:12]:  # En iyi 12 chunk'ı işle
+            enhanced_results.append(result)
+            
+            # Komşu chunk'ları bul (chunk_index ±1)
+            document_id = result['document_id']
+            chunk_index = result['chunk_index']
+            
+            neighbor_chunks = db.query(DocumentChunk).filter(
+                DocumentChunk.document_id == document_id,
+                DocumentChunk.chunk_index.in_([chunk_index - 1, chunk_index + 1])
+            ).all()
+            
+            for neighbor in neighbor_chunks:
+                if neighbor.embeddings:
+                    try:
+                        neighbor_embedding = json.loads(neighbor.embeddings)
+                        neighbor_similarity = np.dot(query_embedding, neighbor_embedding) / (
+                            np.linalg.norm(query_embedding) * np.linalg.norm(neighbor_embedding)
+                        )
+                        
+                        enhanced_results.append({
+                            'document_id': neighbor.document_id,
+                            'chunk_text': neighbor.chunk_text,
+                            'chunk_index': neighbor.chunk_index,
+                            'score': float(neighbor_similarity)
+                        })
+                    except:
+                        continue
+        
+        # Duplicate'leri kaldır ve en iyi 12'yi döndür
+        seen = set()
+        final_results = []
+        for result in enhanced_results:
+            key = (result['document_id'], result['chunk_index'])
+            if key not in seen:
+                seen.add(key)
+                final_results.append(result)
+                if len(final_results) >= 12:
+                    break
+        
+        return final_results
         
     except Exception as e:
         print(f"Chat chunk search error: {e}")
@@ -117,6 +173,48 @@ async def get_chat_messages(
     
     return messages
 
+@router.post("/reprocess-documents", response_model=dict)
+async def reprocess_all_documents(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Tüm dökümanları yeni chunk ayarlarıyla yeniden işle"""
+    try:
+        from app.services.document_processor import DocumentProcessor
+        
+        # Mevcut chunk'ları sil
+        chunks_deleted = db.query(DocumentChunk).join(Document).filter(
+            Document.user_id == current_user.id
+        ).delete()
+        
+        # Dökümanları yeniden işle
+        processor = DocumentProcessor()
+        documents = db.query(Document).filter(
+            Document.user_id == current_user.id,
+            Document.processed == True
+        ).all()
+        
+        reprocessed_count = 0
+        for doc in documents:
+            try:
+                doc.processed = False
+                await processor.process_document(doc, db)
+                reprocessed_count += 1
+            except Exception as e:
+                print(f"Error reprocessing document {doc.id}: {e}")
+        
+        db.commit()
+        
+        return {
+            "message": f"Successfully reprocessed {reprocessed_count} documents",
+            "chunks_deleted": chunks_deleted,
+            "documents_reprocessed": reprocessed_count
+        }
+        
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.post("/", response_model=ChatResponse)
 async def chat_with_ai(
     chat_request: ChatRequest,
@@ -160,7 +258,10 @@ async def chat_with_ai(
         context_docs = []
         relevant_doc_ids = set()
         
-        for chunk_data in relevant_chunks[:5]:  # En iyi 5 chunk
+        print(f"🎯 Using top {len(relevant_chunks)} chunks for context")
+        
+        # En iyi 12 chunk'ı kullan (daha fazla context)
+        for chunk_data in relevant_chunks[:12]:
             doc = db.query(Document).filter(Document.id == chunk_data['document_id']).first()
             if doc:
                 context_docs.append({
@@ -170,8 +271,14 @@ async def chat_with_ai(
                     'chunk_score': chunk_data['score']
                 })
                 relevant_doc_ids.add(doc.id)
+                
+                # Debug: Hangi chunk'ların kullanıldığını logla
+                if "sürdürülebilirlik" in chunk_data['chunk_text'].lower() or "endeks" in chunk_data['chunk_text'].lower():
+                    print(f"📄 Using chunk with 'sürdürülebilirlik endeks': {chunk_data['chunk_text'][:100]}...")
         
         relevant_doc_ids = list(relevant_doc_ids)
+        print(f"📚 Total context documents: {len(context_docs)}")
+        print(f"📊 Context chunks total length: {sum(len(doc['content_text']) for doc in context_docs)} characters")
         
         # AI yanıtı al
         ai_response = await gemini_service.chat_with_context(

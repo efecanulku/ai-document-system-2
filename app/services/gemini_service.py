@@ -82,10 +82,10 @@ class GeminiService:
             
             # En alakalı chunk'ları al
             relevant_chunks = []
-            for doc in context_documents[:3]:  # En fazla 3 döküman
+            for doc in context_documents[:12]:  # En fazla 12 döküman kullan
                 relevant_chunks.append({
                     'filename': doc.get('filename', 'Bilinmeyen'),
-                    'content': doc.get('content_text', '')[:800],  # Kısa tut
+                    'content': doc.get('content_text', '')[:2000],  # Daha uzun içerik
                     'summary': doc.get('summary', '')
                 })
             

@@ -530,20 +530,15 @@ function renderDocuments() {
                             ${doc.processed ? 'İşlendi' : 'İşleniyor'}
                         </span>
                     </div>
-                    ${!doc.processed ? `
-                        <div class="doc-progress">
-                            <div class="doc-progress-bar" style="width: 65%;"></div>
-                        </div>
-                    ` : ''}
-                    ${doc.summary ? `
-                        <div class="doc-summary">
-                            <p>${doc.summary.substring(0, 100)}${doc.summary.length > 100 ? '...' : ''}</p>
-                        </div>
-                    ` : ''}
-                    <div class="doc-stats">
-                        <span>AI Analizi: ${doc.processed ? 'Tamamlandı' : 'Devam ediyor'}</span>
-                        <span>${doc.processed ? '✓' : '⏳'}</span>
-                    </div>
+                                                ${!doc.processed ? `
+                                <div class="doc-progress">
+                                    <div class="doc-progress-bar" style="width: 65%;"></div>
+                                </div>
+                            ` : ''}
+                            <div class="doc-stats">
+                                <span>AI Analizi: ${doc.processed ? 'Tamamlandı' : 'Devam ediyor'}</span>
+                                <span>${doc.processed ? '✓' : '⏳'}</span>
+                            </div>
                 </div>
             </div>
         `;
@@ -593,45 +588,128 @@ async function viewDocumentContent(documentId) {
         const response = await axios.get(`/api/documents/${documentId}/content`);
         const content = response.data;
         
-        // Show modal with content
+        // Show custom modal with content
         const modal = document.createElement('div');
-        modal.className = 'modal fade';
+        modal.className = 'custom-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        `;
+        
         modal.innerHTML = `
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Döküman İçeriği</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            <div class="custom-modal-content" style="
+                background: #1a1a2e;
+                border: 1px solid rgba(0, 255, 136, 0.3);
+                border-radius: 16px;
+                padding: 0;
+                max-width: 800px;
+                width: 90%;
+                max-height: 80vh;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 255, 136, 0.2);
+            ">
+                <div class="custom-modal-header" style="
+                    padding: 20px 24px;
+                    border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background: rgba(0, 255, 136, 0.05);
+                ">
+                    <h5 style="margin: 0; color: #ffffff; font-size: 18px; font-weight: 600;">
+                        <i class="fas fa-file-alt" style="margin-right: 8px; color: #00ff88;"></i>
+                        Döküman İçeriği
+                    </h5>
+                    <button type="button" class="custom-modal-close" style="
+                        background: none;
+                        border: none;
+                        color: #00ff88;
+                        font-size: 24px;
+                        cursor: pointer;
+                        padding: 4px;
+                        border-radius: 4px;
+                        transition: all 0.2s;
+                    " onclick="this.closest('.custom-modal').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="custom-modal-body" style="
+                    padding: 24px;
+                    max-height: 60vh;
+                    overflow-y: auto;
+                    color: #ffffff;
+                ">
+                    ${content.content_text ? `
+                    <div style="margin-bottom: 20px;">
+                        <h6 style="color: #00ff88; margin-bottom: 12px; font-size: 16px;">
+                            <i class="fas fa-file-text" style="margin-right: 8px;"></i>
+                            Döküman İçeriği
+                        </h6>
+                        <div style="
+                            max-height: 400px;
+                            overflow-y: auto;
+                            background: rgba(20, 20, 35, 0.8);
+                            padding: 16px;
+                            border-radius: 8px;
+                            border: 1px solid rgba(0, 255, 136, 0.2);
+                        ">
+                            <pre style="
+                                white-space: pre-wrap;
+                                margin: 0;
+                                color: rgba(255, 255, 255, 0.9);
+                                font-family: 'Courier New', monospace;
+                                font-size: 13px;
+                                line-height: 1.5;
+                            ">${content.content_text}</pre>
+                        </div>
                     </div>
-                    <div class="modal-body">
-                        ${content.summary ? `
-                        <div class="mb-3">
-                            <h6>Özet:</h6>
-                            <p class="text-muted">${content.summary}</p>
-                        </div>
-                        ` : ''}
-                        ${content.content_text ? `
-                        <div class="mb-3">
-                            <h6>İçerik:</h6>
-                            <div style="max-height: 300px; overflow-y: auto; background: #f8f9fa; padding: 1rem; border-radius: 6px;">
-                                <pre style="white-space: pre-wrap; margin: 0;">${content.content_text}</pre>
-                            </div>
-                        </div>
-                        ` : ''}
-                        <div class="text-muted">
-                            <small>İşlenme Durumu: ${content.processed ? 'İşlendi' : 'İşleniyor'}</small>
-                        </div>
+                    ` : ''}
+                    <div style="
+                        padding: 16px;
+                        background: rgba(0, 255, 136, 0.1);
+                        border-radius: 8px;
+                        border: 1px solid rgba(0, 255, 136, 0.2);
+                        text-align: center;
+                    ">
+                        <small style="color: rgba(255, 255, 255, 0.7);">
+                            <i class="fas fa-info-circle" style="margin-right: 6px; color: #00ff88;"></i>
+                            İşlenme Durumu: <span style="color: ${content.processed ? '#00ff88' : '#ffaa00'};">${content.processed ? 'İşlendi ✓' : 'İşleniyor ⏳'}</span>
+                        </small>
                     </div>
                 </div>
             </div>
         `;
         
-        document.body.appendChild(modal);
-        const bsModal = new bootstrap.Modal(modal);
-        bsModal.show();
+        // Add click outside to close
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
         
-        modal.addEventListener('hidden.bs.modal', function() {
-            document.body.removeChild(modal);
+        // Add escape key to close
+        const handleEscape = function(e) {
+            if (e.key === 'Escape') {
+                modal.remove();
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+        
+        document.body.appendChild(modal);
+        
+        // Auto-remove event listeners when modal is removed
+        modal.addEventListener('remove', function() {
+            document.removeEventListener('keydown', handleEscape);
         });
         
     } catch (error) {
