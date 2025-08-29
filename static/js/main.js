@@ -415,8 +415,53 @@ function showSearch() {
 }
 
 function showDocumentUpload() {
-    document.getElementById('uploadForm').style.display = 'block';
-    document.getElementById('uploadForm').scrollIntoView({ behavior: 'smooth' });
+    console.log('📤 showDocumentUpload called from main.js - redirecting to documents section');
+    // Redirect to documents section instead of showing upload form
+    if (window.location.pathname === '/dashboard') {
+        showDocumentsSection();
+    } else {
+        // If already on documents page, just show the upload form
+        const uploadForm = document.getElementById('uploadForm');
+        if (uploadForm) {
+            uploadForm.style.display = 'block';
+            uploadForm.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+}
+
+// Function to show documents section
+function showDocumentsSection() {
+    console.log('📄 showDocumentsSection called from main.js');
+    // Store the target section in localStorage for dashboard.js to pick up
+    localStorage.setItem('showSection', 'documents');
+    // Redirect to dashboard page
+    window.location.href = '/dashboard';
+}
+
+// Handle protected navigation with authentication check
+function handleProtectedNavigation(path) {
+    console.log('🧭 Protected navigation requested to:', path);
+    
+    // Check if user is authenticated
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.log('❌ No token found, redirecting to login');
+        // Redirect to login with next parameter
+        window.location.href = `/login?next=${encodeURIComponent(path)}`;
+        return;
+    }
+    
+    console.log('✅ Token found, proceeding with navigation');
+    
+    // If authenticated, proceed with navigation
+    if (path === '/dashboard') {
+        window.location.href = path;
+    } else {
+        // For other protected routes, store the target section and redirect to dashboard
+        const section = path.substring(1); // Remove leading slash
+        localStorage.setItem('showSection', section);
+        window.location.href = '/dashboard';
+    }
 }
 
 function hideDocumentUpload() {

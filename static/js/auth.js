@@ -119,6 +119,38 @@ class AuthManager {
 // Initialize auth manager
 const authManager = new AuthManager();
 
+// Handle login redirect after successful authentication
+function handleLoginRedirect() {
+    console.log('🔄 handleLoginRedirect called');
+    
+    // Get next parameter from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const next = urlParams.get('next');
+    
+    if (next) {
+        console.log('🎯 Next parameter found:', next);
+        // Clear the next parameter from URL
+        const newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        
+        // Redirect to the next page after a short delay
+        setTimeout(() => {
+            console.log('🚀 Redirecting to:', next);
+            window.location.href = next;
+        }, 500);
+    } else {
+        console.log('🏠 No next parameter, staying on current page');
+    }
+}
+
+// Check if we should handle login redirect
+if (window.location.pathname === '/login') {
+    // If we're on login page and have a token, handle redirect
+    if (authManager.isAuthenticated()) {
+        handleLoginRedirect();
+    }
+}
+
 // Check authentication on protected pages
 function requireAuth() {
     console.log('🔐 requireAuth() called');

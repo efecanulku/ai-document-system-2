@@ -184,6 +184,12 @@ function showSearchSection() {
     }
 }
 
+// Function to show document upload - redirects to documents section
+function showDocumentUpload() {
+    console.log('📤 showDocumentUpload called - redirecting to documents section');
+    showDocumentsSection();
+}
+
 function setupEventListeners() {
     console.log('🎛️ Setting up event listeners...');
     

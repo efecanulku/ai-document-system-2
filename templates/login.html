@@ -628,8 +628,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.style.background = 'var(--gradient-success)';
                 btnText.textContent = 'Welcome Back!';
                 
+                // Check for next parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const next = urlParams.get('next');
+                const redirectUrl = next || '/dashboard';
+                
                 setTimeout(() => {
-                    window.location.href = '/dashboard';
+                    window.location.href = redirectUrl;
                 }, 1000);
             }
         } catch (error) {
