@@ -184,10 +184,22 @@ function showSearchSection() {
     }
 }
 
-// Function to show document upload - redirects to documents section
+// Function to show document upload - shows upload form
 function showDocumentUpload() {
-    console.log('📤 showDocumentUpload called - redirecting to documents section');
+    console.log('📤 showDocumentUpload called - showing upload form');
+    
+    // First ensure we're in documents section
     showDocumentsSection();
+    
+    // Then show the upload form
+    const uploadForm = document.getElementById('uploadForm');
+    if (uploadForm) {
+        console.log('📋 Upload form found, showing it');
+        uploadForm.style.display = 'block';
+        uploadForm.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        console.error('❌ Upload form not found!');
+    }
 }
 
 function setupEventListeners() {
