@@ -78,6 +78,34 @@ async def process_document_background(document_id: int, db: Session):
     except Exception as e:
         print(f"Background processing error: {e}")
 
+@router.post("/{document_id}/reprocess")
+async def reprocess_document(
+    document_id: int,
+    background_tasks: BackgroundTasks,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db)
+):
+    """Takılı kalan dökümanı yeniden işle"""
+    try:
+        document = db.query(Document).filter(
+            Document.id == document_id,
+            Document.user_id == current_user.id
+        ).first()
+        
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        
+        print(f"🔄 Reprocessing document: {document.filename}")
+        
+        # Background task olarak yeniden işleme başlat
+        background_tasks.add_task(process_document_background, document.id, db)
+        
+        return {"message": "Document reprocessing started"}
+        
+    except Exception as e:
+        print(f"❌ Reprocess error: {e}")
+        raise HTTPException(status_code=500, detail=f"Reprocessing failed: {str(e)}")
+
 @router.get("/", response_model=List[DocumentSchema])
 async def get_user_documents(
     current_user: User = Depends(get_current_active_user),

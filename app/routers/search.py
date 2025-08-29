@@ -45,7 +45,7 @@ async def search_in_chunks(query: str, user_id: int, db: Session):
                     np.linalg.norm(query_embedding) * np.linalg.norm(chunk_embedding)
                 )
                 
-                if similarity > 0.6:  # Daha yüksek threshold - sadece gerçekten alakalı sonuçlar
+                if similarity > 0.7:  # Daha sıkı threshold - sadece çok alakalı sonuçlar
                     results.append({
                         'document_id': chunk.document_id,
                         'chunk_text': chunk.chunk_text,
@@ -60,14 +60,14 @@ async def search_in_chunks(query: str, user_id: int, db: Session):
         print(f"🔍 Search results: {len(results)} chunks found, top scores: {[f'{r:.3f}' for r in [r['score'] for r in results[:5]]]}")
         
         # Sadece yüksek skorlu sonuçları döndür
-        high_quality_results = [r for r in results[:20] if r['score'] > 0.7]
+        high_quality_results = [r for r in results[:20] if r['score'] > 0.8]
         
         if high_quality_results:
-            print(f"✅ Returning {len(high_quality_results)} high-quality results (score > 0.7)")
+            print(f"✅ Returning {len(high_quality_results)} high-quality results (score > 0.8)")
             return high_quality_results
         else:
             # Eğer yüksek kaliteli sonuç yoksa, en iyi 10'u döndür
-            print(f"⚠️ No high-quality results, returning top 10 (score > 0.6)")
+            print(f"⚠️ No high-quality results, returning top 10 (score > 0.7)")
             return results[:10]
         
     except Exception as e:

@@ -74,6 +74,57 @@ class GeminiService:
             print(f"Embeddings generation error: {e}")
             return []
     
+    async def extract_text_from_image(self, image_path: str) -> str:
+        """Resimden metin çıkar (OCR) - Gemini Vision API kullanarak"""
+        try:
+            import base64
+            
+            # Resmi base64'e çevir
+            with open(image_path, "rb") as image_file:
+                image_data = base64.b64encode(image_file.read()).decode('utf-8')
+            
+            # Gemini Vision modeli kullan
+            vision_model = genai.GenerativeModel('gemini-2.0-flash-exp')
+            
+            prompt = """
+            Bu resimdeki tüm metni çıkar. Lütfen:
+            1. Tüm yazıları, sayıları ve sembolleri dahil et
+            2. Metni orijinal sırayla ve düzende ver
+            3. Tabloları, listeleri ve yapılandırılmış verileri koru
+            4. Sadece metni ver, ek yorum yapma
+            5. Türkçe karakterleri doğru şekilde kullan
+            """
+            
+            # Resim ve prompt'u birleştir
+            response = vision_model.generate_content([
+                prompt,
+                {
+                    "mime_type": "image/jpeg" if image_path.lower().endswith('.jpg') else "image/png",
+                    "data": image_data
+                }
+            ])
+            
+            extracted_text = response.text.strip()
+            print(f"✅ Gemini OCR başarılı: {len(extracted_text)} karakter çıkarıldı")
+            return extracted_text
+            
+        except Exception as e:
+            print(f"❌ Gemini OCR hatası: {e}")
+            # Fallback olarak Tesseract kullan
+            try:
+                import pytesseract
+                from PIL import Image
+                
+                print("🔄 Tesseract fallback kullanılıyor...")
+                image = Image.open(image_path)
+                text = pytesseract.image_to_string(image, lang='tur+eng')
+                print(f"✅ Tesseract fallback başarılı: {len(text)} karakter çıkarıldı")
+                return text
+                
+            except Exception as fallback_error:
+                print(f"❌ Tesseract fallback da başarısız: {fallback_error}")
+                return f"Resimden metin çıkarılamadı. Hata: {str(e)}"
+    
     async def chat_with_context(self, question: str, context_documents: List[Dict]) -> str:
         """Döküman bağlamında soru cevapla - Optimize edilmiş prompt"""
         try:
