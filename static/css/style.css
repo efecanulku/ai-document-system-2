@@ -74,6 +74,331 @@
     --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ========== DASHBOARD SECTIONS ========== */
+
+/* Recent Documents Section */
+.recent-docs-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.recent-docs-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(0, 255, 136, 0.05) 0%, 
+        rgba(139, 92, 246, 0.05) 50%, 
+        rgba(0, 212, 255, 0.05) 100%);
+    pointer-events: none;
+    border-radius: var(--radius-2xl);
+}
+
+.recent-docs-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.recent-doc-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--bg-glass);
+    border: 1px solid rgba(0, 255, 136, 0.2);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.recent-doc-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 255, 136, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.recent-doc-item:hover::before {
+    left: 100%;
+}
+
+.recent-doc-item:hover {
+    border-color: rgba(0, 255, 136, 0.4);
+    box-shadow: 0 8px 25px rgba(0, 255, 136, 0.15);
+    transform: translateY(-2px);
+}
+
+.recent-doc-icon {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    position: relative;
+}
+
+.recent-doc-icon.pdf {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.recent-doc-icon.docx {
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+    box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+}
+
+.recent-doc-icon.xlsx {
+    background: linear-gradient(135deg, #45b7d1, #96c93d);
+    box-shadow: 0 4px 15px rgba(69, 183, 209, 0.3);
+}
+
+.recent-doc-icon.xls {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.recent-doc-icon.jpeg, .recent-doc-icon.jpg, .recent-doc-icon.png {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.recent-doc-icon.txt {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+}
+
+.recent-doc-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.recent-doc-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: var(--space-1);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.recent-doc-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.recent-doc-date {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+}
+
+.recent-doc-status {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.3);
+    border-radius: var(--radius);
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--neon-green);
+}
+
+/* File Distribution Section */
+.file-distribution-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.file-distribution-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(139, 92, 246, 0.05) 0%, 
+        rgba(0, 212, 255, 0.05) 50%, 
+        rgba(0, 255, 136, 0.05) 100%);
+    pointer-events: none;
+    border-radius: var(--radius-2xl);
+}
+
+.file-distribution-chart {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.file-type-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3);
+    background: var(--bg-glass);
+    border: 1px solid rgba(139, 92, 246, 0.2);
+    border-radius: var(--radius-lg);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.file-type-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(139, 92, 246, 0.1), transparent);
+    transition: left 0.6s ease;
+}
+
+.file-type-item:hover::before {
+    left: 100%;
+}
+
+.file-type-item:hover {
+    border-color: rgba(139, 92, 246, 0.4);
+    box-shadow: 0 8px 25px rgba(139, 92, 246, 0.15);
+    transform: translateY(-2px);
+}
+
+.file-type-info {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.file-type-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    color: var(--text-primary);
+}
+
+.file-type-icon.pdf {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+}
+
+.file-type-icon.docx {
+    background: linear-gradient(135deg, #4ecdc4, #44a08d);
+}
+
+.file-type-icon.xlsx {
+    background: linear-gradient(135deg, #45b7d1, #96c93d);
+}
+
+.file-type-icon.xls {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.file-type-icon.jpeg, .file-type-icon.jpg, .file-type-icon.png {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.file-type-icon.txt {
+    background: linear-gradient(135deg, #f093fb, #f5576c);
+}
+
+.file-type-details {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+}
+
+.file-type-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.file-type-count {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.file-type-percentage {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-weight: 600;
+    color: var(--neon-purple);
+}
+
+.file-type-bar {
+    width: 60px;
+    height: 6px;
+    background: rgba(139, 92, 246, 0.2);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    position: relative;
+}
+
+.file-type-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--neon-purple), var(--neon-blue));
+    border-radius: var(--radius-full);
+    transition: width var(--transition-slow);
+}
+
+/* Section Actions */
+.section-actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.section-actions .btn-futuristic {
+    padding: var(--space-2) var(--space-3);
+    font-size: 0.875rem;
+    border-radius: var(--radius-md);
+}
+
+/* Chart Placeholder */
+.chart-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-8);
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.chart-placeholder i {
+    font-size: 3rem;
+    margin-bottom: var(--space-3);
+    opacity: 0.5;
+}
+
+.chart-placeholder p {
+    font-size: 1rem;
+    margin: 0;
+    opacity: 0.7;
+}
+
 /* ========== GLOBAL RESET ========== */
 * {
     margin: 0;
@@ -795,6 +1120,53 @@ body {
     flex-wrap: wrap;
 }
 
+/* ========== DASHBOARD SECTIONS ========== */
+
+/* Dashboard Grid Layout */
+.dashboard-grid-futuristic {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-6);
+    padding: var(--space-6);
+}
+
+/* Section Cards */
+.section-card-futuristic {
+    background: var(--bg-card);
+    border-radius: var(--radius-2xl);
+    border: 1px solid rgba(0, 255, 136, 0.1);
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    position: relative;
+}
+
+.section-header-futuristic {
+    padding: var(--space-6);
+    border-bottom: 1px solid rgba(0, 255, 136, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.section-title-futuristic {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.section-title-futuristic i {
+    color: var(--neon-green);
+    font-size: 1.5rem;
+}
+
+.section-content-futuristic {
+    padding: var(--space-6);
+}
+
 /* ========== CARDS ========== */
 .card-glass {
     background: var(--bg-glass);
@@ -873,6 +1245,26 @@ body {
 
 /* ========== RESPONSIVE DESIGN ========== */
 @media (max-width: 768px) {
+    .dashboard-grid-futuristic {
+        grid-template-columns: 1fr;
+        gap: var(--space-4);
+        padding: var(--space-4);
+    }
+    
+    .section-header-futuristic {
+        padding: var(--space-4);
+    }
+    
+    .section-content-futuristic {
+        padding: var(--space-4);
+    }
+    
+    .recent-doc-item,
+    .file-type-item {
+        margin: 0;
+        width: 100%;
+    }
+    
     .navbar-content {
         padding: 0 var(--space-4);
     }

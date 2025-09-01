@@ -427,27 +427,31 @@ function updateRecentDocuments() {
 
     if (dashboardData.recentDocuments.length === 0) {
         container.innerHTML = `
-            <div class="text-center p-3">
-                <i class="fas fa-file-alt fa-2x text-muted mb-2"></i>
-                <p class="text-muted mb-0">Henüz döküman yüklenmemiş</p>
+            <div class="chart-placeholder">
+                <i class="fas fa-file-alt"></i>
+                <p>Henüz döküman yüklenmemiş</p>
             </div>
         `;
         return;
     }
 
     const documentsHtml = dashboardData.recentDocuments.map(doc => `
-        <div class="d-flex align-items-center mb-3 p-2 border rounded">
-            <div class="file-icon ${getFileTypeColor(doc.file_type)} me-3" style="width: 32px; height: 32px; font-size: 0.9rem;">
-                <i class="${getFileIconClass(doc.file_type)}"></i>
+        <div class="recent-doc-item">
+            <div class="recent-doc-icon ${doc.file_type.toLowerCase()}">
+                <i class="fas fa-file-${getFileTypeIcon(doc.file_type)}"></i>
             </div>
-            <div class="flex-grow-1">
-                <h6 class="mb-0 text-truncate">${doc.original_filename}</h6>
-                <small class="text-muted">${formatDate(doc.upload_date)}</small>
-            </div>
-            <div class="text-end">
-                <span class="badge ${doc.processed ? 'bg-success' : 'bg-warning'}">
-                    ${doc.processed ? 'İşlendi' : 'İşleniyor'}
-                </span>
+            <div class="recent-doc-info">
+                <div class="recent-doc-name">${doc.original_filename}</div>
+                <div class="recent-doc-meta">
+                    <div class="recent-doc-date">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>${formatDate(doc.upload_date)}</span>
+                    </div>
+                    <div class="recent-doc-status">
+                        <i class="fas fa-${doc.processed ? 'check-circle' : 'clock'}"></i>
+                        <span>${doc.processed ? 'İşlendi' : 'İşleniyor'}</span>
+                    </div>
+                </div>
             </div>
         </div>
     `).join('');
@@ -461,9 +465,9 @@ function updateFileTypeChart(fileTypes) {
 
     if (Object.keys(fileTypes).length === 0) {
         container.innerHTML = `
-            <div class="text-center p-3">
-                <i class="fas fa-chart-pie fa-2x text-muted mb-2"></i>
-                <p class="text-muted mb-0">Veri bulunmuyor</p>
+            <div class="chart-placeholder">
+                <i class="fas fa-chart-pie"></i>
+                <p>Veri bulunamıyor</p>
             </div>
         `;
         return;
@@ -473,23 +477,55 @@ function updateFileTypeChart(fileTypes) {
     const chartHtml = Object.entries(fileTypes).map(([type, count]) => {
         const percentage = ((count / total) * 100).toFixed(1);
         return `
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <div class="d-flex align-items-center">
-                    <i class="${getFileIconClass(type)} me-2"></i>
-                    <span>${type.toUpperCase()}</span>
+            <div class="file-type-item">
+                <div class="file-type-info">
+                    <div class="file-type-icon ${type.toLowerCase()}">
+                        <i class="fas fa-file-${getFileTypeIcon(type)}"></i>
+                    </div>
+                    <div class="file-type-details">
+                        <div class="file-type-name">${type.toUpperCase()}</div>
+                        <div class="file-type-count">${count} dosya</div>
+                    </div>
                 </div>
-                <div class="text-end">
-                    <span class="fw-bold">${count}</span>
-                    <small class="text-muted">(${percentage}%)</small>
+                <div class="file-type-percentage">
+                    <span>${percentage}%</span>
+                    <div class="file-type-bar">
+                        <div class="file-type-bar-fill" style="width: ${percentage}%"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="progress mb-3" style="height: 6px;">
-                <div class="progress-bar" style="width: ${percentage}%"></div>
             </div>
         `;
     }).join('');
 
     container.innerHTML = chartHtml;
+}
+
+// Helper function to get file type icon
+function getFileTypeIcon(fileType) {
+    const iconMap = {
+        'pdf': 'pdf',
+        'docx': 'word',
+        'doc': 'word',
+        'xlsx': 'excel',
+        'xls': 'excel',
+        'jpg': 'image',
+        'jpeg': 'image',
+        'png': 'image',
+        'gif': 'image',
+        'txt': 'alt'
+    };
+    return iconMap[fileType.toLowerCase()] || 'alt';
+}
+
+// Refresh functions for dashboard sections
+function refreshRecentDocuments() {
+    console.log('🔄 Refreshing recent documents...');
+    loadDashboardData();
+}
+
+function refreshFileTypeChart() {
+    console.log('🔄 Refreshing file type chart...');
+    loadDashboardData();
 }
 
 // Document upload handler

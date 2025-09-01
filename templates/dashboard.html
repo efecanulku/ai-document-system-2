@@ -128,30 +128,40 @@
     <!-- Content Grid -->
     <div class="dashboard-grid-futuristic">
         <!-- Recent Documents -->
-        <div class="section-card-futuristic">
+        <div class="section-card-futuristic recent-docs-section">
             <div class="section-header-futuristic">
                 <h2 class="section-title-futuristic">
                     <i class="fas fa-clock"></i>
                     Son Yüklenen Dökümanlar
                 </h2>
+                <div class="section-actions">
+                    <button class="btn-futuristic btn-futuristic-secondary btn-sm" onclick="refreshRecentDocuments()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
             </div>
             <div class="section-content-futuristic">
-                <div id="recentDocuments">
+                <div id="recentDocuments" class="recent-docs-container">
                     <!-- Populated by JavaScript -->
                 </div>
             </div>
         </div>
         
         <!-- File Type Distribution -->
-        <div class="section-card-futuristic">
+        <div class="section-card-futuristic file-distribution-section">
             <div class="section-header-futuristic">
                 <h2 class="section-title-futuristic">
-                    <i class="fas fa-chart-bar"></i>
+                    <i class="fas fa-chart-pie"></i>
                     Dosya Tipi Dağılımı
                 </h2>
+                <div class="section-actions">
+                    <button class="btn-futuristic btn-futuristic-secondary btn-sm" onclick="refreshFileTypeChart()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
             </div>
             <div class="section-content-futuristic">
-                <div id="fileTypeChart">
+                <div id="fileTypeChart" class="file-distribution-chart">
                     <div class="chart-placeholder">
                         <i class="fas fa-chart-pie"></i>
                         <p>Veri bulunamıyor</p>
